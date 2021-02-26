@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/mnt/c/Users/clara/OneDrive/2021 Spring Mines/Compilers/LGA/build",
+  "command": "/usr/bin/c++   -g -o CMakeFiles/LGA.dir/cfg.cpp.o -c \"/mnt/c/Users/clara/OneDrive/2021 Spring Mines/Compilers/LGA/cfg.cpp\"",
+  "file": "/mnt/c/Users/clara/OneDrive/2021 Spring Mines/Compilers/LGA/cfg.cpp"
+},
+{
+  "directory": "/mnt/c/Users/clara/OneDrive/2021 Spring Mines/Compilers/LGA/build",
+  "command": "/usr/bin/c++   -g -o CMakeFiles/LGA.dir/main.cpp.o -c \"/mnt/c/Users/clara/OneDrive/2021 Spring Mines/Compilers/LGA/main.cpp\"",
+  "file": "/mnt/c/Users/clara/OneDrive/2021 Spring Mines/Compilers/LGA/main.cpp"
+}
+]

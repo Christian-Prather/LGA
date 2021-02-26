@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -rdynamic CMakeFiles/LGA.dir/cfg.cpp.o CMakeFiles/LGA.dir/main.cpp.o -o LGA 

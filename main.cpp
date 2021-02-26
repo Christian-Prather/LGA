@@ -29,8 +29,4 @@ int main(int argc, char **argv)
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
-
-    // bool lambda = derivesToLambda();
-    // FirstResult first = firstSet(cfg);
-    // FollowResult follow = followSet(cfg);
 }

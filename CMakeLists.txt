@@ -4,7 +4,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 project(LGA)
 
 file(GLOB_RECURSE INCS "include/*.h")
-add_executable(LGA main.cpp follow.cpp ${INCS})
+add_executable(LGA main.cpp first.cpp ${INCS})
 set_property(TARGET LGA PROPERTY CXX_STANDARD 11)
 
 install(

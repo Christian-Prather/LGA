@@ -42,65 +42,69 @@ CFG ReadFile(string file) {
                 if (temp != "\0") lineVec.push_back(temp);
             }
 
-            vector<string> rightSide;
-            bool right = false; 
+            // Ignore empty lines in input file
+            if (!lineVec.empty()) {
 
-            // Check if the first character on the line is |
-            // If so, set right to true and remove the | from the line         
-            if (lineVec.at(0) == "|") {
-                right = true;
-                lineVec.erase(lineVec.begin());
+                vector<string> rightSide;
+                bool right = false; 
+
+                // Check if the first character on the line is |
+                // If so, set right to true and remove the | from the line         
+                if (lineVec.at(0) == "|") {
+                    right = true;
+                    lineVec.erase(lineVec.begin());
+                }
+
+                // Loop through the line vector
+                for (int i = 0; i < lineVec.size(); i++) {
+
+                    // Once we hit a ->
+                    if (lineVec.at(i) == "->") {
+                        CFGRule rule; // create a new cfg rule
+                        rule.nonTerminal = lineVec.at(i-1); // add the non-terminal to the rule
+                        cfg.nonTerminals.insert(lineVec.at(i-1)); // add the non-terminal to the CFG                 
+                        right = true; // we are now on the right side of this rule
+                        cfg.grammarRules.push_back(rule); // add the rule to the cfg
+                        ruleIdx++;
+                        continue;
+                    }
+
+                    // If we are on the right side of the rule
+                    if (right == true) {
+                        rightSide.push_back(lineVec.at(i)); // add the rest of the line to vect rightSide
+                    }
+                }
+
+                vector<string> ruleProd; // vector to hold the current production
+                // Loop through the right side of the rule
+                for (int i = 0; i < rightSide.size(); i++) {
+
+                    // check if the symbol is a terminal
+                    if (IsStrLowercase(rightSide.at(i)) &&
+                                    rightSide.at(i) != "lambda" &&
+                                    rightSide.at(i) != "|") {
+                        cfg.terminals.insert(rightSide.at(i)); // If yes, add to the cfg
+                    }
+
+                    // Check if this is the start state
+                    if (rightSide.at(i) == "$") {
+                        cfg.startSymbol = cfg.grammarRules.at(ruleIdx).nonTerminal; // If yes, set cfg startState
+                    }
+
+                    // Push back symbol to rule production
+                    if (rightSide.at(i) != "|") {
+                        ruleProd.push_back(rightSide.at(i));
+                    }
+
+                    // If we encounter a | in the middle of a line, push the old production to the
+                    // cfg and start a new rule production
+                    else {
+                        cfg.grammarRules.at(ruleIdx).productions.push_back(ruleProd);
+                        ruleProd.clear();
+                    }
+                }
+                cfg.grammarRules.at(ruleIdx).productions.push_back(ruleProd); // Push the last rule production to the cfg
             }
-
-            // Loop through the line vector
-            for (int i = 0; i < lineVec.size(); i++) {
-
-                // Once we hit a ->
-                if (lineVec.at(i) == "->") {
-                    CFGRule rule; // create a new cfg rule
-                    rule.nonTerminal = lineVec.at(i-1); // add the non-terminal to the rule
-                    cfg.nonTerminals.insert(lineVec.at(i-1)); // add the non-terminal to the CFG                 
-                    right = true; // we are now on the right side of this rule
-                    cfg.grammarRules.push_back(rule); // add the rule to the cfg
-                    ruleIdx++;
-                    continue;
-                }
-
-                // If we are on the right side of the rule
-                if (right == true) {
-                    rightSide.push_back(lineVec.at(i)); // add the rest of the line to vect rightSide
-                }
-            }
-
-            vector<string> ruleProd; // vector to hold the current production
-            // Loop through the right side of the rule
-            for (int i = 0; i < rightSide.size(); i++) {
-
-                // check if the symbol is a terminal
-                if (IsStrLowercase(rightSide.at(i)) &&
-                                   rightSide.at(i) != "lambda" &&
-                                   rightSide.at(i) != "|") {
-                    cfg.terminals.insert(rightSide.at(i)); // If yes, add to the cfg
-                }
-
-                // Check if this is the start state
-                if (rightSide.at(i) == "$") {
-                    cfg.startSymbol = cfg.grammarRules.at(ruleIdx).nonTerminal; // If yes, set cfg startState
-                }
-
-                // Push back symbol to rule production
-                if (rightSide.at(i) != "|") {
-                    ruleProd.push_back(rightSide.at(i));
-                }
-
-                // If we encounter a | in the middle of a line, push the old production to the
-                // cfg and start a new rule production
-                else {
-                    cfg.grammarRules.at(ruleIdx).productions.push_back(ruleProd);
-                    ruleProd.clear();
-                }
-            }
-            cfg.grammarRules.at(ruleIdx).productions.push_back(ruleProd); // Push the last rule production to the cfg
         }
     
         f.close(); // Close file

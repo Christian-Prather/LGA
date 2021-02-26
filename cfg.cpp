@@ -39,7 +39,7 @@ CFG ReadFile(string file) {
             while(!ss.eof()) {
                 string temp;
                 ss >> temp;
-                lineVec.push_back(temp);
+                if (temp != "\0") lineVec.push_back(temp);
             }
 
             vector<string> rightSide;

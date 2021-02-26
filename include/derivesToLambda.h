@@ -3,26 +3,75 @@
 
 #include <vector>
 #include <string>
+#include <stack>
 
 using namespace std;
 
-bool derivesToLambda(string L)
+#include "cfg.h"
+
+bool prodRuleIsInStack(Rule p, stack<Rule> T)
 {
-    if (L == "S")
+    stack<Rule> T_copy = T;
+
+    while ((!T_copy.empty()) && (T_copy.top().LHS != p.LHS) && (T_copy.top().RHS != p.RHS))
     {
-        return false;
+        T_copy.pop();
     }
-    else if (L == "A")
-    {
-        return false;
-    }
-    else if (L == "B")
+    if (!T_copy.empty())
     {
         return true;
     }
-    else if (L == "C")
+    return false;
+}
+
+bool derivesToLambda(string L, stack<Rule> T, CFG cfg)
+{
+
+    // Vector of rules that have L as their LHS
+    vector<Rule> lRules;
+    for (Rule p : cfg.rules)
     {
-        return false;
+        if (p.LHS == L)
+        {
+            lRules.push_back(p);
+            break;
+        }
+    }
+
+    // foreach ( p ∈ P with LHS L )
+    for (Rule p : lRules)
+    {
+        if (prodRuleIsInStack(p, T))
+        {
+            continue;
+        }
+        if (p.RHS[0] == "lambda")
+        {
+            return true;
+        }
+        bool allderivelambda = true;
+        // foreach ( Xi ∈ N in RHS of p )
+        for (string X : p.RHS)
+        {
+            if (cfg.terminals.find(X) != cfg.terminals.end())
+            {
+                continue;
+            }
+            T.push(p);
+
+            allderivelambda = derivesToLambda(X, T, cfg);
+
+            T.pop();
+
+            if (!allderivelambda)
+            {
+                break;
+            }
+        }
+        if (allderivelambda)
+        {
+            return true;
+        }
     }
     return false;
 }

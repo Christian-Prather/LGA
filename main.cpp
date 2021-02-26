@@ -17,6 +17,9 @@
 #include <algorithm>
 
 #include "include/cfg.h"
+#include "include/derivesToLambda.h"
+#include "include/first.h"
+#include "include/follow.h"
 
 using namespace std;
 
@@ -25,6 +28,9 @@ int main(int argc, char **argv)
     string inputFile = "../testFiles/assignlist.cfg";
 
     CFG cfg = readCfg(inputFile);
-
     printOutput(cfg);
+
+    // bool lambda = derivesToLambda();
+    // FirstResult first = firstSet(cfg);
+    // FollowResult follow = followSet(cfg);
 }

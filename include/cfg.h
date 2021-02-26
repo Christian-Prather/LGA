@@ -1,4 +1,3 @@
-
 #ifndef LIST_H_CFG
 #define LIST_H_CFG
 
@@ -24,6 +23,5 @@ struct CFG
 
 CFG readCfg(string path);
 void printOutput(CFG cfg);
-
 
 #endif

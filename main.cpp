@@ -1,3 +1,14 @@
+/**
+ * @file main.cpp
+ * @author Alexandra Ernst
+ * @brief LGA 13
+ * @version 0.1
+ * @date 2021-02-25
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -109,10 +120,36 @@ void readFile(string path)
     rhs.clear();
 }
 
+void printOutput()
+{
+    cout << "Terminals: " ;
+    for (auto terminal : terminals)
+    {
+        cout << terminal << ", ";
+    }
+    cout << endl << "Non-terminals: " ;
+    for (auto nonTerminal : nonTerminals)
+    {
+        cout << nonTerminal << ", " ;
+    }
+    cout << endl << "Grammar Rules" << endl;
+    for (Rule rule : cfg)
+    {
+        cout << rule.LHS << " -> ";
+        for (auto rhs : rule.RHS)
+        {
+            cout << rhs << " ";
+        }
+        cout << endl;
+    }
+    cout << "Grammar Start Symbol or Goal: " << startSymbol << endl;
+}
+
 int main(int argc, char **argv)
 {
     string inputFile = "../testFiles/assignlist.cfg";
 
     readFile(inputFile);
     
+    printOutput();
 }

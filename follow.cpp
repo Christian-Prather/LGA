@@ -1,100 +1,50 @@
-/**
- * @file follow.cpp
- * @author Christian Prather
- * @brief Follow function
- * @version 0.1
- * @date 2021-02-25
- * 
- * @copyright Copyright (c) 2021
- * 
- */
-
 #include "include/follow.h"
-using namespace std;
 
-/**
- * @brief Set the Union object
- * 
- * @param first 
- * @param second 
- * @return set<string> 
- */
-set<string> setUnion(set<string> first, set<string> second)
+FollowResult followSet(string A, set<string> T, vector<Rule> cfg)
 {
-    set<string> result = first;
-    for (auto x : second)
-    {
-        if (!result.count(x))
-        {
-            result.insert(x);
-        }
-    }
-    return result;
-}
+    FollowResult followResult;
 
-/**
- * @brief Placeholder
- * 
- * @param L 
- * @return true 
- * @return false 
- */
-bool derivesToLambda(string L)
-{
-    if (L == "S")
+    if (T.find(A) == T.end())
     {
-        return false;
+        followResult.T = T;
+        return followResult;
     }
-    else if (L == "A")
-    {
-        return false;
-    }
-    else if (L == "B")
-    {
-        return true;
-    }
-    else if (L == "C")
-    {
-        return false;
-    }
-    return false;
-}
-
-/**
- * @brief Recursivly find the follow set
- * 
- * @param sequence 
- * @param T 
- * @return FollowResult 
- */
-FollowResult firstSet(string sequence, set<string> T)
-{
+    T.insert(A);
     set<string> F;
-    char next = sequence.at(0);
-    string x;
-    x += next;
 
-    FollowResult result;
-    if (T.count(x))
+    for (Rule rule : cfg)
     {
-        T.insert(x);
-        // Get all rules where LHS match x
-        for (auto rule : rules)
+        int count = 1;
+        for (string s : rule.RHS)
         {
-            if (rule.lhs == x)
+            if (A == s)
             {
-                FollowResult tempResult = firstSet(rule.rhs, T);
-                result.F = setUnion(F, tempResult.F);
+                vector<string> XB;
+                while (count < rule.RHS.size())
+                {
+                    XB.push_back(rule.RHS[count]);
+                    count++;
+                }
+                if (!XB.empty())
+                {
+                    set<string> emptySet;
+                    FirstResult firstResult = firstSet(XB, emptySet, cfg);
+                    auto G = firstResult.F;
+                    F = setUnion(F, G);
+                }
+                else
+                {
+                    FollowResult followtResult = followSet(rule.LHS, T, cfg);
+                    auto G = followtResult.F;
+                    F = setUnion(F, G);
+                }
+                continue;
             }
+            count++;
         }
     }
 
-    if (derivesToLambda(x))
-    {
-        sequence.erase(sequence.begin());
-        FollowResult tempResult = firstSet(sequence, T);
-        result.F = setUnion(F, tempResult.F);
-    }
-    result.T = T;
-    return result;
+    followResult.F = F;
+    followResult.T = T;
+    return followResult;
 }

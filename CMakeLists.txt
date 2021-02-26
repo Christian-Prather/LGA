@@ -1,17 +1,10 @@
 cmake_minimum_required(VERSION 3.1.0)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-
 project(LGA)
 
-file(GLOB_RECURSE INCS "include/*.h")
-add_executable(LGA main.cpp follow.cpp ${INCS})
-set_property(TARGET LGA PROPERTY CXX_STANDARD 11)
+include(CTest)
+enable_testing()
 
-install(
-	TARGETS
+add_executable(LGA cfg.cpp main.cpp)
 
-	LGA
-
-	RUNTIME DESTINATION
-	${CMAKE_INSTALL_PREFIX}/bin
-)
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+include(CPack)

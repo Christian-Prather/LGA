@@ -1,7 +1,10 @@
+#ifndef LIST_H_FOLLOW
+#define LIST_H_FOLLOW
+
 /**
  * @file follow.h
- * @author Christian Prather
- * @brief Helper functions for follow set
+ * @author Alexandra Ernst
+ * @brief 
  * @version 0.1
  * @date 2021-02-25
  * 
@@ -9,19 +12,15 @@
  * 
  */
 
+#include "first.h"
+#include "cfg.h"
+#include "setUnion.h"
+
+#include <set>
 #include <string>
 #include <iostream>
-#include <set>
-#include <vector>
+
 using namespace std;
-
-struct Rule
-{
-    string lhs;
-    string rhs;
-};
-
-vector<Rule> rules;
 
 struct FollowResult
 {
@@ -29,5 +28,6 @@ struct FollowResult
     set<string> T;
 };
 
-set<string> setUnion(set<string> first, set<string> second);
-FollowResult firstSet(vector<string> sequence, set<string> T);
+FollowResult followSet(string A, set<string> T, vector<Rule> cfg);
+
+#endif

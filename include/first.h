@@ -18,6 +18,6 @@ struct FirstResult
     set<string> T;
 };
 
-FirstResult firstSet(vector<string> XB, set<string> T, vector<Rule> cfg);
+FirstResult firstSet(vector<string> XB, set<string> T, CFG cfg);
 
 #endif

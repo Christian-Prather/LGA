@@ -17,6 +17,6 @@ struct FollowResult
     set<string> T;
 };
 
-FollowResult followSet(string A, set<string> T, vector<Rule> cfg);
+FollowResult followSet(string A, set<string> T, CFG cfg);
 
 #endif

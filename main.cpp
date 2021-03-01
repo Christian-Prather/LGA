@@ -29,4 +29,26 @@ int main(int argc, char **argv)
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
+
+    stack<Rule> T;
+    for (string nonTerm : cfg.nonTerminals)
+    {
+        bool dToL = derivesToLambda(nonTerm, T, cfg);
+        string lambda = "false";
+        if (dToL == true)
+        {
+            lambda = "true";
+        }
+        cout << nonTerm << " derives to lambda: " << lambda << endl;
+
+        // FirstResult first = firstSet();
+
+        // set<string> followT;
+        // FollowResult follow = followSet(nonTerm, followT, cfg);
+        // cout << "Follow set for " << nonTerm << ": ";
+        // for (string f : follow.T)
+        // {
+        //     cout << f << ", ";
+        // }
+    }
 }

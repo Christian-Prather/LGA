@@ -1,6 +1,6 @@
 #include "include/follow.h"
 
-FollowResult followSet(string A, set<string> T, vector<Rule> cfg)
+FollowResult followSet(string A, set<string> T, CFG cfg)
 {
     FollowResult followResult;
 
@@ -12,7 +12,7 @@ FollowResult followSet(string A, set<string> T, vector<Rule> cfg)
     T.insert(A);
     set<string> F;
 
-    for (Rule rule : cfg)
+    for (Rule rule : cfg.rules)
     {
         int count = 1;
         for (string s : rule.RHS)

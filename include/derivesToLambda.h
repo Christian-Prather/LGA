@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include <algorithm>
 
 using namespace std;
 
@@ -34,7 +35,6 @@ bool derivesToLambda(string L, stack<Rule> T, CFG cfg)
         if (p.LHS == L)
         {
             lRules.push_back(p);
-            break;
         }
     }
 
@@ -53,9 +53,13 @@ bool derivesToLambda(string L, stack<Rule> T, CFG cfg)
         // foreach ( Xi ∈ N in RHS of p )
         for (string X : p.RHS)
         {
-            if (cfg.terminals.find(X) != cfg.terminals.end())
+            if (X == "$")
             {
                 continue;
+            }
+            if (find(cfg.terminals.begin(), cfg.terminals.end(), X) != cfg.terminals.end())
+            {
+                goto cont;
             }
             T.push(p);
 
@@ -72,6 +76,7 @@ bool derivesToLambda(string L, stack<Rule> T, CFG cfg)
         {
             return true;
         }
+    cont:;
     }
     return false;
 }

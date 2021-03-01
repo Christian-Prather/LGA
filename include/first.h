@@ -1,22 +1,23 @@
-#ifndef LIST_H_FOLLOW
-#define LIST_H_FOLLOW
+#ifndef LIST_H_FIRST
+#define LIST_H_FIRST
 
-#include "first.h"
-#include "cfg.h"
 #include "setUnion.h"
+#include "derivesToLambda.h"
+#include "cfg.h"
 
-#include <set>
 #include <string>
 #include <iostream>
+#include <set>
+#include <vector>
 
 using namespace std;
 
-struct FollowResult
+struct FirstResult
 {
     set<string> F;
     set<string> T;
 };
 
-FollowResult followSet(string A, set<string> T, CFG cfg);
+FirstResult firstSet(vector<string> XB, set<string> T, CFG cfg);
 
 #endif

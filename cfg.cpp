@@ -53,13 +53,16 @@ CFG readCfg(string path)
                     if (word != "|")
                     {
                         rhs.push_back(word);
-                        if (all_of(word.begin(), word.end(), [](unsigned char c) { return std::isupper(c); }))
+                        if (word != "lambda" && word != "$")
                         {
-                            nonTerminals.insert(word);
-                        }
-                        else if (word != "lambda" && word != "$")
-                        {
-                            terminals.insert(word);
+                            if (!all_of(word.begin(), word.end(), [](unsigned char c) { return std::islower(c); }))
+                            {
+                                nonTerminals.insert(word);
+                            }
+                            else
+                            {
+                                terminals.insert(word);
+                            }
                         }
                     }
                     else

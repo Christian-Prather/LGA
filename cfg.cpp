@@ -1,164 +1,141 @@
+#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <iostream>
+#include <vector>
+#include <set>
+#include <algorithm>
 
-#include "cfg.h"
+#include "include/cfg.h"
 
-using namespace std;
+vector<Rule> rules;
+set<string> terminals;
+set<string> nonTerminals;
+string startSymbol;
 
-/***
- * IsStrLowercase(string)
- * Given a string s, return true if it is lowercase
- */
-bool IsStrLowercase(string s) {
-    for (char c : s) {
-        if (!islower(c)) return false;
-    }
-    return true;
-}
-
-/***
- * ReadFile(string)
- * Given a filename (string) file, read the file into a CFG struct and return the CFG
- */
-CFG ReadFile(string file) {
-    CFG cfg; // CFG to return
+CFG readCfg(string path)
+{
+    ifstream inputFile(path);
     string line;
-    ifstream f(file);
 
-    // If we successfully opened the file
-    if (f.is_open()) {
+    if (!inputFile.is_open())
+    {
+        cout << "not file" << endl;
+        exit(1);
+    }
+    else if (inputFile.peek() == ifstream::traits_type::eof())
+    {
+        cout << "empty file" << endl;
+        exit(1);
+    }
 
-        int ruleIdx = -1;
-        // For each line in the file
-        while (getline(f,line)) {
-
-            // Read the line into a vector of strings lineVec
-            stringstream ss(line);
-            vector<string> lineVec;
-            while(!ss.eof()) {
-                string temp;
-                ss >> temp;
-                if (temp != "\0") lineVec.push_back(temp);
-            }
-
-            // Ignore empty lines in input file
-            if (!lineVec.empty()) {
-
-                vector<string> rightSide;
-                bool right = false; 
-
-                // Check if the first character on the line is |
-                // If so, set right to true and remove the | from the line         
-                if (lineVec.at(0) == "|") {
-                    right = true;
-                    lineVec.erase(lineVec.begin());
+    vector<string> rhs;
+    string lhs;
+    int lineCount = 0;
+    while (getline(inputFile, line))
+    {
+        if (!line.empty())
+        {
+            istringstream ss(line);
+            int wordCount = 0;
+            for (string word; ss >> word;)
+            {
+                if ((lineCount == 0) && (wordCount == 0))
+                {
+                    startSymbol = word;
+                    nonTerminals.insert(word);
+                    lhs = word;
+                    wordCount++;
+                    continue;
                 }
 
-                // Loop through the line vector
-                for (int i = 0; i < lineVec.size(); i++) {
-
-                    // Once we hit a ->
-                    if (lineVec.at(i) == "->") {
-                        CFGRule rule; // create a new cfg rule
-                        rule.nonTerminal = lineVec.at(i-1); // add the non-terminal to the rule
-                        cfg.nonTerminals.insert(lineVec.at(i-1)); // add the non-terminal to the CFG                 
-                        right = true; // we are now on the right side of this rule
-                        cfg.grammarRules.push_back(rule); // add the rule to the cfg
-                        ruleIdx++;
-                        continue;
+                if (word != "->")
+                {
+                    if (word != "|")
+                    {
+                        rhs.push_back(word);
+                        if (word != "lambda" && word != "$")
+                        {
+                            if (!all_of(word.begin(), word.end(), [](unsigned char c) { return std::islower(c); }))
+                            {
+                                nonTerminals.insert(word);
+                            }
+                            else
+                            {
+                                terminals.insert(word);
+                            }
+                        }
                     }
-
-                    // If we are on the right side of the rule
-                    if (right == true) {
-                        rightSide.push_back(lineVec.at(i)); // add the rest of the line to vect rightSide
-                    }
-                }
-
-                vector<string> ruleProd; // vector to hold the current production
-                // Loop through the right side of the rule
-                for (int i = 0; i < rightSide.size(); i++) {
-
-                    // check if the symbol is a terminal
-                    if (IsStrLowercase(rightSide.at(i)) &&
-                                    rightSide.at(i) != "lambda" &&
-                                    rightSide.at(i) != "|") {
-                        cfg.terminals.insert(rightSide.at(i)); // If yes, add to the cfg
-                    }
-
-                    // Check if this is the start state
-                    if (rightSide.at(i) == "$") {
-                        cfg.startSymbol = cfg.grammarRules.at(ruleIdx).nonTerminal; // If yes, set cfg startState
-                    }
-
-                    // Push back symbol to rule production
-                    if (rightSide.at(i) != "|") {
-                        ruleProd.push_back(rightSide.at(i));
-                    }
-
-                    // If we encounter a | in the middle of a line, push the old production to the
-                    // cfg and start a new rule production
-                    else {
-                        cfg.grammarRules.at(ruleIdx).productions.push_back(ruleProd);
-                        ruleProd.clear();
+                    else
+                    {
+                        Rule rule;
+                        rule.LHS = lhs;
+                        for (string s : rhs)
+                        {
+                            rule.RHS.push_back(s);
+                        }
+                        rules.push_back(rule);
+                        rhs.clear();
                     }
                 }
-                cfg.grammarRules.at(ruleIdx).productions.push_back(ruleProd); // Push the last rule production to the cfg
+                else if (!rhs.empty())
+                {
+                    string newlhs = rhs.back();
+                    rhs.pop_back();
+                    Rule rule;
+                    rule.LHS = lhs;
+                    for (string s : rhs)
+                    {
+                        rule.RHS.push_back(s);
+                    }
+                    rules.push_back(rule);
+                    rhs.clear();
+                    lhs = newlhs;
+                }
+                wordCount++;
             }
         }
-    
-        f.close(); // Close file
+        lineCount++;
     }
+    Rule rule;
+    rule.LHS = lhs;
+    for (string s : rhs)
+    {
+        rule.RHS.push_back(s);
+    }
+    rules.push_back(rule);
+    rhs.clear();
 
-    else cout << "Unable to open file.\n";
-
+    CFG cfg;
+    cfg.rules = rules;
+    cfg.terminals = terminals;
+    cfg.nonTerminals = nonTerminals;
+    cfg.startSymbol = startSymbol;
     return cfg;
 }
 
-/***
- * PrintCFG(CFG)
- * Given a CFG, print the CFG in Prof Hellman's format
- */
-void PrintCFG(CFG cfg) {
-
-    // Print terminals
+void printOutput(CFG cfg)
+{
     cout << "Terminals:";
-    for (string s : cfg.terminals) {
-        cout << " " << s;
+    for (auto terminal : terminals)
+    {
+        cout << " " << terminal;
     }
-    cout << endl;
-
-    // Print non-terminals
-    cout << "Non-terminals:";
-    for (string s : cfg.nonTerminals) {
-        cout << " " << s;
+    cout << endl
+         << "Non-terminals: ";
+    for (auto nonTerminal : nonTerminals)
+    {
+        cout << " " << nonTerminal;
     }
-    cout << endl << endl;
-
-    // Print grammar rules
-    cout << "Grammar Rules\n";
-    int lineNum = 1;
-
-    // Sorry about this triple for loop... I got a little vector-happy with my structs
-
-    // For each rule
-    for (int i = 0; i < cfg.grammarRules.size(); i++) {
-        // For each rule production
-        for (int j = 0; j < cfg.grammarRules.at(i).productions.size(); j++) {
-
-            // Print the line num, the non-terminal, and ->
-            cout << "(" << to_string(lineNum) << ")\t" << cfg.grammarRules.at(i).nonTerminal << " -> ";
-
-            // For each string/symbol in the current production
-            for (int k = 0; k < cfg.grammarRules.at(i).productions.at(j).size(); k++) {
-                cout << cfg.grammarRules.at(i).productions.at(j).at(k) << " "; // Print the symbol
-            }
-            cout << endl;
-            lineNum++;
+    cout << endl
+         << "Grammar Rules" << endl;
+    for (Rule rule : cfg.rules)
+    {
+        cout << rule.LHS << " -> ";
+        for (auto rhs : rule.RHS)
+        {
+            cout << rhs << " ";
         }
+        cout << endl;
     }
-
-    // Print CFG start state
-    cout << "\nGrammar Start Symbol or Goal: " << cfg.startSymbol << endl;
-
+    cout << "Grammar Start Symbol or Goal: " << startSymbol << endl;
 }

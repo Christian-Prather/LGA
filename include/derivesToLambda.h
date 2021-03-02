@@ -27,57 +27,46 @@ bool prodRuleIsInStack(Rule p, stack<Rule> T)
 
 bool derivesToLambda(string L, stack<Rule> T, CFG cfg)
 {
-    if (L == "lambda")
-    {
-        return true;
-    }
-    // Vector of rules that have L as their LHS
-    vector<Rule> lRules;
+    // foreach ( p ∈ P with LHS L )
     for (Rule p : cfg.rules)
     {
         if (p.LHS == L)
         {
-            lRules.push_back(p);
-        }
-    }
-
-    // foreach ( p ∈ P with LHS L )
-    for (Rule p : lRules)
-    {
-        if (prodRuleIsInStack(p, T))
-        {
-            continue;
-        }
-        if (p.RHS[0] == "lambda")
-        {
-            return true;
-        }
-        bool allderivelambda = true;
-        // foreach ( Xi ∈ N in RHS of p )
-        for (string X : p.RHS)
-        {
-            if (X == "$")
+            if (prodRuleIsInStack(p, T))
             {
                 continue;
             }
-            if (find(cfg.terminals.begin(), cfg.terminals.end(), X) != cfg.terminals.end())
+            if (p.RHS[0] == "lambda")
             {
-                goto cont;
+                return true;
             }
-            T.push(p);
-
-            allderivelambda = derivesToLambda(X, T, cfg);
-
-            T.pop();
-
-            if (!allderivelambda)
+            bool allderivelambda = true;
+            // foreach ( Xi ∈ N in RHS of p )
+            for (string X : p.RHS)
             {
-                break;
+                if (X == "$")
+                {
+                    continue;
+                }
+                if (find(cfg.terminals.begin(), cfg.terminals.end(), X) != cfg.terminals.end())
+                {
+                    goto cont;
+                }
+                T.push(p);
+
+                allderivelambda = derivesToLambda(X, T, cfg);
+
+                T.pop();
+
+                if (!allderivelambda)
+                {
+                    break;
+                }
             }
-        }
-        if (allderivelambda)
-        {
-            return true;
+            if (allderivelambda)
+            {
+                return true;
+            }
         }
     cont:;
     }

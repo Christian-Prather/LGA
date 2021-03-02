@@ -31,24 +31,17 @@ FirstResult firstSet(vector<string> XB, set<string> T, CFG cfg)
         return result;
     }
 
-    // Vector of rules that have X as their LHS
-    vector<Rule> lRules;
-    for (Rule p : cfg.rules)
-    {
-        if (p.LHS == X)
-        {
-            lRules.push_back(p);
-        }
-    }
-
     if (T.find(X) == T.end())
     {
         T.insert(X);
 
-        for (Rule p : lRules)
+        for (Rule p : cfg.rules)
         {
-            FirstResult tempFirst = firstSet(p.RHS, T, cfg);
-            result.F = setUnion(result.F, tempFirst.F);
+            if (p.LHS == X)
+            {
+                FirstResult tempFirst = firstSet(p.RHS, T, cfg);
+                result.F = setUnion(result.F, tempFirst.F);
+            }
         }
     }
     stack<Rule> t;

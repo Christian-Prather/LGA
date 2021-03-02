@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 #include <iostream>
-// #include <algorithm>
 
 using namespace std;
 
@@ -23,7 +22,6 @@ FollowResult followSet(string A, set<string> T, CFG cfg)
     FollowResult followResult;
 
     if (T.find(A) != T.end())
-    // if (find(T.begin(), T.end(), A) != T.end())
     {
         followResult.T = T;
         return followResult;
@@ -33,7 +31,7 @@ FollowResult followSet(string A, set<string> T, CFG cfg)
 
     for (Rule rule : cfg.rules)
     {
-        int count = 0;
+        int count = 1;
         for (string s : rule.RHS)
         {
             if (A == s)

@@ -41,14 +41,24 @@ int main(int argc, char **argv)
         }
         cout << nonTerm << " derives to lambda: " << lambda << endl;
 
-        // FirstResult first = firstSet();
+        vector<string> XB;
+        XB.push_back(nonTerm);
+        set<string> firstT;
+        FirstResult first = firstSet(XB, firstT, cfg);
+        cout << "First set for " << nonTerm << ": ";
+        for (string f : first.F)
+        {
+            cout << f << " ";
+        }
+        cout << endl;
 
-        // set<string> followT;
-        // FollowResult follow = followSet(nonTerm, followT, cfg);
-        // cout << "Follow set for " << nonTerm << ": ";
-        // for (string f : follow.T)
-        // {
-        //     cout << f << ", ";
-        // }
+        set<string> followT;
+        FollowResult follow = followSet(nonTerm, followT, cfg);
+        cout << "Follow set for " << nonTerm << ": ";
+        for (string f : follow.F)
+        {
+            cout << f << " ";
+        }
+        cout << endl << endl;
     }
 }

@@ -27,7 +27,10 @@ bool prodRuleIsInStack(Rule p, stack<Rule> T)
 
 bool derivesToLambda(string L, stack<Rule> T, CFG cfg)
 {
-
+    if (L == "lambda")
+    {
+        return true;
+    }
     // Vector of rules that have L as their LHS
     vector<Rule> lRules;
     for (Rule p : cfg.rules)

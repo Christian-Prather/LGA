@@ -127,7 +127,7 @@ void printOutput(CFG cfg)
         cout << " " << nonTerminal;
     }
     cout << endl
-         << "Grammar Rules" << endl;
+         << "Grammar Rules:" << endl;
     for (Rule rule : cfg.rules)
     {
         cout << rule.LHS << " -> ";
@@ -137,5 +137,5 @@ void printOutput(CFG cfg)
         }
         cout << endl;
     }
-    cout << "Grammar Start Symbol or Goal: " << startSymbol << endl;
+    cout << "Grammar Start Symbol or Goal: " << startSymbol << endl << endl;
 }

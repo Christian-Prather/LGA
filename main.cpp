@@ -20,12 +20,13 @@
 #include "include/derivesToLambda.h"
 #include "include/first.h"
 #include "include/follow.h"
+#include "include/predict.h"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/assignlist.cfg";
+    string inputFile = "../testFiles/lectureExample.cfg";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
@@ -33,19 +34,21 @@ int main(int argc, char **argv)
     stack<Rule> T;
     for (string nonTerm : cfg.nonTerminals)
     {
+        cout << nonTerm << " : " << endl;
+
         bool dToL = derivesToLambda(nonTerm, T, cfg);
         string lambda = "false";
         if (dToL == true)
         {
             lambda = "true";
         }
-        cout << nonTerm << " derives to lambda: " << lambda << endl;
+        cout << "Derives to lambda: " << lambda << endl;
 
         vector<string> XB;
         XB.push_back(nonTerm);
         set<string> firstT;
         FirstResult first = firstSet(XB, firstT, cfg);
-        cout << "First set for " << nonTerm << ": ";
+        cout << "First set: ";
         for (string f : first.F)
         {
             cout << f << " ";
@@ -54,11 +57,31 @@ int main(int argc, char **argv)
 
         set<string> followT;
         FollowResult follow = followSet(nonTerm, followT, cfg);
-        cout << "Follow set for " << nonTerm << ": ";
+        cout << "Follow set: ";
         for (string f : follow.F)
         {
             cout << f << " ";
         }
-        cout << endl << endl;
+        cout << endl
+             << endl;
+    }
+
+    for (Rule rule : cfg.rules)
+    {   
+        cout << rule.LHS << " -> ";
+        for (string s : rule.RHS)
+        {
+            cout << s << " ";
+        }
+        cout << ": " << endl;
+
+        set<string> predict = predictSet(rule, cfg);
+        cout << "predict set: ";
+        for (string s : predict)
+        {
+            cout << s << " ";
+        }
+        cout << endl
+             << endl;
     }
 }

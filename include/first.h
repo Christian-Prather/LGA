@@ -53,7 +53,7 @@ FirstResult firstSet(vector<string> XB, set<string> T, CFG cfg)
             if (XB.size() == 1 && XB.at(0) != "$")
             {
                 FirstResult tempFirst = firstSet(XB, T, cfg);
-                result.F = setUnion(F, tempFirst.F);
+                result.F = setUnion(result.F, tempFirst.F);
             }
         }
     }

@@ -4,11 +4,7 @@
 #include <set>
 #include <string>
 
-#include "cfg.h"
-#include "first.h"
 #include "follow.h"
-#include "derivesToLambda.h"
-#include "setUnion.h"
 
 using namespace std;
 

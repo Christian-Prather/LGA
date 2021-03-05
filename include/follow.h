@@ -2,8 +2,6 @@
 #define LIST_H_FOLLOW
 
 #include "first.h"
-#include "cfg.h"
-#include "setUnion.h"
 
 #include <set>
 #include <string>

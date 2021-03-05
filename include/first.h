@@ -9,6 +9,7 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include<stack>
 
 using namespace std;
 

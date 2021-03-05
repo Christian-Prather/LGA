@@ -11,6 +11,7 @@ struct Rule
 {
     string LHS;
     vector<string> RHS;
+    int identity;
 };
 
 struct CFG

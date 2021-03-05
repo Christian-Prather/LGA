@@ -31,6 +31,7 @@ CFG readCfg(string path)
     vector<string> rhs;
     string lhs;
     int lineCount = 0;
+    int ruleCounter = 1;
     while (getline(inputFile, line))
     {
         if (!line.empty())
@@ -73,6 +74,8 @@ CFG readCfg(string path)
                         {
                             rule.RHS.push_back(s);
                         }
+                        rule.identity = ruleCounter;
+                        ruleCounter++;
                         rules.push_back(rule);
                         rhs.clear();
                     }
@@ -87,6 +90,8 @@ CFG readCfg(string path)
                     {
                         rule.RHS.push_back(s);
                     }
+                    rule.identity = ruleCounter;
+                    ruleCounter++;
                     rules.push_back(rule);
                     rhs.clear();
                     lhs = newlhs;
@@ -102,6 +107,8 @@ CFG readCfg(string path)
     {
         rule.RHS.push_back(s);
     }
+    rule.identity = ruleCounter;
+    ruleCounter++;
     rules.push_back(rule);
     rhs.clear();
 
@@ -137,5 +144,6 @@ void printOutput(CFG cfg)
         }
         cout << endl;
     }
-    cout << "Grammar Start Symbol or Goal: " << startSymbol << endl << endl;
+    cout << "Grammar Start Symbol or Goal: " << startSymbol << endl
+         << endl;
 }

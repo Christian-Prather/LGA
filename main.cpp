@@ -19,6 +19,7 @@
 #include "include/cfg.h"
 #include "include/predict.h"
 #include "include/ll-table.h"
+#include "include/ll-tabular-parsing.h"
 
 using namespace std;
 
@@ -85,4 +86,14 @@ int main(int argc, char **argv)
     }
 
     buildTable(cfg);
+
+    string fi = "../../../../Downloads/language.cfg";
+    ifstream f(fi);
+    string s;
+    struct node* n;
+    while (getline(f,s)) {
+        istringstream ss(s);
+        n = LLTabularParsing(ss,t,cfg);
+        cout << n->data << endl;
+    }
 }

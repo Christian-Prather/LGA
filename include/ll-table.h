@@ -16,7 +16,7 @@ struct Table
     map<string, vector<int>> rows;
 };
 
-void buildTable(CFG cfg)
+Table buildTable(CFG cfg)
 {
     Table llTable;
     for (auto setIt = cfg.terminals.begin(); setIt != cfg.terminals.end(); setIt++)
@@ -75,6 +75,7 @@ void buildTable(CFG cfg)
         }
         cout << endl;
     }
+    return llTable;
 }
 
 #endif

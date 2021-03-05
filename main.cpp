@@ -24,7 +24,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/lectureExample.cfg";
+    string inputFile = "../testFiles/predict-set-test1.cfg";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
@@ -84,5 +84,5 @@ int main(int argc, char **argv)
         cout << endl;
     }
 
-    buildTable(cfg);
+   Table llTable = buildTable(cfg);
 }

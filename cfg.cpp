@@ -94,6 +94,10 @@ CFG readCfg(string path)
                 wordCount++;
             }
         }
+        else if (lineCount == 0)
+        {
+            continue;
+        }
         lineCount++;
     }
     Rule rule;

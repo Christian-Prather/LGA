@@ -17,16 +17,14 @@
 #include <algorithm>
 
 #include "include/cfg.h"
-#include "include/derivesToLambda.h"
-#include "include/first.h"
-#include "include/follow.h"
 #include "include/predict.h"
+#include "include/ll-table.h"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/lectureExample.cfg";
+    string inputFile = "../testFiles/predict-set-test1.cfg";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
@@ -67,7 +65,7 @@ int main(int argc, char **argv)
     }
 
     for (Rule rule : cfg.rules)
-    {   
+    {
         cout << rule.LHS << " -> ";
         for (string s : rule.RHS)
         {
@@ -81,7 +79,10 @@ int main(int argc, char **argv)
         {
             cout << s << " ";
         }
-        cout << endl
-             << endl;
+        cout << endl;
+        cout << "Rule #: " << rule.identity << endl;
+        cout << endl;
     }
+
+   Table llTable = buildTable(cfg);
 }

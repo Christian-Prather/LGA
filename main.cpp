@@ -21,6 +21,7 @@
 #include "include/first.h"
 #include "include/follow.h"
 #include "include/predict.h"
+#include "include/llTable.h"
 
 using namespace std;
 
@@ -67,7 +68,7 @@ int main(int argc, char **argv)
     }
 
     for (Rule rule : cfg.rules)
-    {   
+    {
         cout << rule.LHS << " -> ";
         for (string s : rule.RHS)
         {
@@ -81,7 +82,68 @@ int main(int argc, char **argv)
         {
             cout << s << " ";
         }
-        cout << endl
-             << endl;
+        cout << endl;
+        cout << "Rule #: " << rule.identity << endl;
+        cout << endl;
+    }
+
+    string lastNonTerm = "";
+    vector<Rule> matchingRules;
+    Table llTable;
+    for (auto setIt = cfg.terminals.begin(); setIt != cfg.terminals.end(); setIt++)
+    {
+        llTable.headerRow.push_back(*setIt);
+    }
+    llTable.headerRow.push_back("$");
+
+    for (auto rule : cfg.rules)
+    {
+        // Reference to new row, or existing row
+        vector<int> &row = llTable.rows[rule.LHS];
+        set<string> predict = predictSet(rule, cfg);
+        for (int i = 0; i < llTable.headerRow.size(); i++)
+        {
+            string terminal = llTable.headerRow[i];
+            // This terminal is in the predict set so mark the table
+            // with the rule
+            if (predict.count(terminal) > 0)
+            {
+                // See if terminal looked at befor
+                if (row.size() <= i)
+                {
+                    row.push_back(rule.identity);
+                }
+                else
+                {
+                    row[i] = rule.identity;
+                }
+            }
+            else
+            {
+                // Not there check if there is already an enrty in cell
+                if (row.size() <= i)
+                {
+                    row.push_back(NA);
+                }
+            }
+        }
+    }
+
+    cout << "LL TABLE" << endl;
+    cout << "  ";
+    for (auto terminal : llTable.headerRow)
+    {
+        cout << terminal << " ";
+    }
+    cout << endl;
+    map<string, vector<int>>::iterator iter;
+    for (iter = llTable.rows.begin(); iter != llTable.rows.end(); iter++)
+    {
+        cout << iter->first << " ";
+        for (auto entry : iter->second)
+        {
+            cout << entry << " ";
+        }
+        cout << endl;
     }
 }

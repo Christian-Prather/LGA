@@ -2,6 +2,8 @@
 #define LL_TABULAR_PARSING_H
 
 #include <stack>
+#include <sstream>
+#include <algorithm>
 
 #include "cfg.h"
 #include "ll-table.h"
@@ -17,8 +19,10 @@ struct node  {
     struct node *right; 
 }; 
 
+bool compare(Rule r);
+
 // procedure LLTabularParsing ( ts, LLT , P )
-struct node* LLTabularParsing(Table LLT, CFG cfg) {
+struct node* LLTabularParsing(istringstream ts, Table LLT, CFG cfg) {
 // ts is a token stream with peek and pop operations
 // LLT is an LL (1) parsing table as described by the text
 // returns a parse tree of the sentence in ts, or FAILS when ts does not emit a sentence belonging to the grammar deriving LLT .
@@ -43,6 +47,9 @@ parent = rootT;
 K.push(cfg.startSymbol);
 // while ( |K| > 0 ) do (
 while (K.size() > 0) {
+    istringstream cpy(ts.str());
+    string peek;
+    cpy >> peek;
     // x ← K.pop()
     string x = K.top();
     K.pop();
@@ -50,7 +57,13 @@ while (K.size() > 0) {
     if (cfg.nonTerminals.find(x) != cfg.nonTerminals.end()) {
         // # Next token may not predict a p ∈ P
         // p ← P[LLT[x][ts.peek()]] or FAIL
-        Rule p = P.front();
+        int llTermIdx = find(LLT.headerRow.begin(), LLT.headerRow.end(), peek) - LLT.headerRow.begin();
+        int ident = LLT.rows[x].at(llTermIdx);
+        Rule p;
+        for (Rule r: P) {
+            if (r.identity == ident) p = r;
+        }
+        if (p.RHS.empty()) exit(1);
         // push MARKER onto K
         K.push(MARKER);
         // R ← RHS of p
@@ -74,15 +87,16 @@ while (K.size() > 0) {
             if (cfg.terminals.find(x) != cfg.terminals.end() || x == "$") {
             // # Next token must be what is expected
             // if ( x =/= ts.peek() ) then FAIL
-            
+            if (x != peek) exit(1);
             // # Update x with the token type and source value from ts
             // x ← ts.pop()
+            ts >> x;
         // )
             }
         // append x as the rightmost child of Current
         current->right->data = x;
         }
-    // ) else if ( x is a MA R K E R ) then (
+    // ) else if ( x is a MARKER ) then (
         else if (x == MARKER) {
         // Current ← Current.parent
         current = parent;
@@ -92,6 +106,7 @@ while (K.size() > 0) {
 }
 // # Current now points to Root which has a singular child S
 // return Root’s only child
+return rootT->right;
 }
 
 #endif

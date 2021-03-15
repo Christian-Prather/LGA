@@ -19,6 +19,7 @@
 #include "include/cfg.h"
 #include "include/predict.h"
 #include "include/ll-table.h"
+#include "include/item.h"
 
 using namespace std;
 
@@ -85,4 +86,6 @@ int main(int argc, char **argv)
     }
 
    Table llTable = buildTable(cfg);
+
+   set<Item> itemSets;
 }

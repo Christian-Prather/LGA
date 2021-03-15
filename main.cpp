@@ -87,5 +87,5 @@ int main(int argc, char **argv)
 
    Table llTable = buildTable(cfg);
 
-   set<Item> itemSets;
+   set<ItemSet> itemSets;
 }

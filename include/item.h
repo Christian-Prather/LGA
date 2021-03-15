@@ -23,6 +23,13 @@ struct Item
     int progressMarkerIndex = 0;
 };
 
+struct ItemSet
+{
+    vector<Item> itemSet;
+    int parentItemSetIndex;
+    string parentItemSetGrammarSymbol;
+};
+
 /**
  * @brief Will progress the item passed in one grammar symbol.
  * Incrementing the progress marker index and returning the 

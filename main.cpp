@@ -20,6 +20,7 @@
 #include "include/predict.h"
 #include "include/ll-table.h"
 #include "include/item.h"
+#include "include/closure.h"
 
 using namespace std;
 

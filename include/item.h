@@ -39,5 +39,6 @@ struct ItemSet
  * @return string The grammar symbol that was traversed
  */
 string progress(Item &item);
+void printItemSet(ItemSet iSet);
 
 #endif

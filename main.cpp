@@ -26,7 +26,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/predict-set-test1.cfg";
+    string inputFile = "./testFiles/eplusnum.cfg";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
@@ -88,5 +88,29 @@ int main(int argc, char **argv)
 
    Table llTable = buildTable(cfg);
 
-   set<ItemSet> itemSets;
+   vector<Item> vecItem;
+   for (Rule r : cfg.rules) {
+       if (r.LHS == cfg.startSymbol) {
+           Item t;
+           t.rule = r;
+           t.progressMarkerIndex = 0;
+           vecItem.push_back(t);
+       }
+   }
+
+   //set<ItemSet> itemSets;
+   ItemSet itSet;
+   itSet.itemSet = vecItem;
+   itSet.parentItemSetGrammarSymbol = cfg.startSymbol;
+   itSet.parentItemSetIndex = 0;
+   //itemSets.insert(itSet);
+
+   //set<ItemSet>::iterator it = itemSets.begin();
+   
+   //while (it != itemSets.end()) {
+    cout << "Original Item Set:\n";
+    printItemSet(itSet);
+    cout << "Item Set After Closure:\n";
+    printItemSet(closure(itSet, cfg));
+   //}
 }

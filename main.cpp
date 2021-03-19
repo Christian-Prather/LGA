@@ -21,12 +21,13 @@
 #include "include/ll-table.h"
 #include "include/item.h"
 #include "include/closure.h"
+#include "include/goTo.h"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "./testFiles/eplusnum.cfg";
+    string inputFile = "../testFiles/biglanguage_grammar.cfg";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
@@ -86,31 +87,74 @@ int main(int argc, char **argv)
         cout << endl;
     }
 
-   Table llTable = buildTable(cfg);
+    Table llTable = buildTable(cfg);
 
-   vector<Item> vecItem;
-   for (Rule r : cfg.rules) {
-       if (r.LHS == cfg.startSymbol) {
-           Item t;
-           t.rule = r;
-           t.progressMarkerIndex = 0;
-           vecItem.push_back(t);
-       }
-   }
+    vector<Item> vecItem;
+    for (Rule r : cfg.rules)
+    {
+        if (r.LHS == cfg.startSymbol)
+        {
+            Item t;
+            t.rule = r;
+            t.progressMarkerIndex = 0;
+            vecItem.push_back(t);
+        }
+    }
 
-   //set<ItemSet> itemSets;
-   ItemSet itSet;
-   itSet.itemSet = vecItem;
-   itSet.parentItemSetGrammarSymbol = cfg.startSymbol;
-   itSet.parentItemSetIndex = 0;
-   //itemSets.insert(itSet);
+    //set<ItemSet> itemSets;
+    ItemSet itSet;
+    itSet.itemSet = vecItem;
+    itSet.parentItemSetGrammarSymbol = cfg.startSymbol;
+    itSet.parentItemSetIndex = 0;
+    //itemSets.insert(itSet);
 
-   //set<ItemSet>::iterator it = itemSets.begin();
-   
-   //while (it != itemSets.end()) {
+    //set<ItemSet>::iterator it = itemSets.begin();
+
+    //while (it != itemSets.end()) {
     cout << "Original Item Set:\n";
     printItemSet(itSet);
     cout << "Item Set After Closure:\n";
-    printItemSet(closure(itSet, cfg));
-   //}
+    itSet = closure(itSet, cfg);
+    printItemSet(itSet);
+    vector<ItemSet> itemSets;
+    itemSets.push_back(itSet);
+    for (auto symbol : cfg.terminals)
+    {
+        ItemSet newSet;
+        for (auto item : itSet.itemSet)
+        {
+            if (symbolRight(symbol, item))
+            {
+                Item newItem = goTo(item);
+                newSet.itemSet.push_back(newItem);
+            }
+        }
+        newSet = closure(newSet, cfg);
+        itemSets.push_back(newSet);
+    }
+
+    for (auto symbol : cfg.nonTerminals)
+    {
+        ItemSet newSet;
+        for (auto item : itSet.itemSet)
+        {
+            if (symbolRight(symbol, item))
+            {
+                Item newItem = goTo(item);
+                newSet.itemSet.push_back(newItem);
+            }
+        }
+        if (!newSet.itemSet.empty())
+        {
+            newSet = closure(newSet, cfg);
+            itemSets.push_back(newSet);
+        }
+    }
+    cout << "GOTO:///////////////////////////////" << endl;
+    for (auto set : itemSets)
+    {
+        printItemSet(set);
+    }
+
+    //}
 }

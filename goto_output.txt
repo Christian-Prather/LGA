@@ -1,0 +1,115 @@
+prefix-sum_grammar.cfg:
+
+	GOTO:///////////////////////////////
+	*** ITEM SET ***
+	Rules:
+	START -> * E $ 
+	E -> * plus E E 
+	E -> * num 
+	****************
+	*** ITEM SET ***
+	Rules:
+	E -> num 
+	****************
+	*** ITEM SET ***
+	Rules:
+	E -> plus * E E 
+	****************
+	*** ITEM SET ***
+	Rules:
+	START -> E * $ 
+****************
+
+precexpr_grammar.cfg:
+
+	GOTO:///////////////////////////////
+	*** ITEM SET ***
+	Rules:
+	S -> * SUM $ 
+	SUM -> * PRODUCT 
+	SUM -> * SUM ADD PRODUCT 
+	PRODUCT -> * POWER 
+	PRODUCT -> * PRODUCT MULT POWER 
+	POWER -> * VALUE 
+	POWER -> * VALUE EXP POWER 
+	VALUE -> * num 
+	VALUE -> * var 
+	VALUE -> * ( SUM ) 
+	****************
+	*** ITEM SET ***
+	Rules:
+	VALUE -> num 
+	****************
+	*** ITEM SET ***
+	Rules:
+	VALUE -> var 
+	****************
+	*** ITEM SET ***
+	Rules:
+	VALUE -> ( * SUM ) 
+	SUM -> * PRODUCT 
+	SUM -> * SUM ADD PRODUCT 
+	PRODUCT -> * POWER 
+	PRODUCT -> * PRODUCT MULT POWER 
+	POWER -> * VALUE 
+	POWER -> * VALUE EXP POWER 
+	****************
+	*** ITEM SET ***
+	Rules:
+	PRODUCT -> POWER 
+	****************
+	*** ITEM SET ***
+	Rules:
+	SUM -> PRODUCT 
+	PRODUCT -> PRODUCT * MULT POWER 
+	MULT -> * * 
+	MULT -> * / 
+	MULT -> * % 
+	****************
+	*** ITEM SET ***
+	Rules:
+	S -> SUM * $ 
+	SUM -> SUM * ADD PRODUCT 
+	ADD -> * + 
+	ADD -> * - 
+	****************
+	*** ITEM SET ***
+	Rules:
+	POWER -> VALUE 
+	POWER -> VALUE * EXP POWER 
+	EXP -> * ** 
+
+
+biglanguage_grammar.cfg:
+
+	GOTO:///////////////////////////////
+	*** ITEM SET ***
+	Rules:
+	S -> * T U C $ 
+	T -> * x T y T 
+	T -> * t 
+	T -> * lambda 
+	****************
+	*** ITEM SET ***
+	Rules:
+	****************
+	*** ITEM SET ***
+	Rules:
+	****************
+	*** ITEM SET ***
+	Rules:
+	T -> t 
+	****************
+	*** ITEM SET ***
+	Rules:
+	T -> x * T y T 
+	****************
+	*** ITEM SET ***
+	Rules:
+	****************
+	*** ITEM SET ***
+	Rules:
+	S -> T * U C $ 
+	U -> * A B C 
+	A -> * x B 
+	****************

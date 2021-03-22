@@ -102,16 +102,11 @@ int main(int argc, char **argv)
         }
     }
 
-    //set<ItemSet> itemSets;
     ItemSet itSet;
     itSet.itemSet = vecItem;
     itSet.parentItemSetGrammarSymbol = cfg.startSymbol;
     itSet.parentItemSetIndex = 0;
-    //itemSets.insert(itSet);
 
-    //set<ItemSet>::iterator it = itemSets.begin();
-
-    //while (it != itemSets.end()) {
     cout << "Original Item Set:\n";
     printItemSet(itSet);
     cout << "Item Set After Closure:\n";
@@ -163,5 +158,5 @@ int main(int argc, char **argv)
         itemSets[i].index = i;
     }
 
-    //}
+    auto actionTable = buildActionTable(itemSets, cfg);
 }

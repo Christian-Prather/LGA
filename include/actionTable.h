@@ -8,7 +8,8 @@ using namespace std;
 enum Action
 {
     Shift,
-    Reduce
+    Reduce,
+    None
 };
 
 struct ActionGoTO
@@ -38,20 +39,26 @@ bool sameRule(Rule one, Rule two)
 
 ActionTable actionTable;
 
-vector<int> searchSets(vector<ItemSet> itemSets, Item searchItem)
+// Searches for shifts
+vector<int> searchSets(vector<ItemSet> itemSets, Item searchItem, set<string> headerRow)
 {
     vector<int> matches;
+
     for (auto set : itemSets)
     {
         for (auto item : set.itemSet)
         {
-            if (item.progressMarkerIndex == searchItem.progressMarkerIndex + 1)
+            for (auto character : headerRow)
             {
-                // Potential
-                if (sameRule(item.rule, searchItem.rule))
+
+                if (item.progressMarkerIndex == searchItem.progressMarkerIndex + 1 && item.rule[item.progressMarkerIndex] == character)
                 {
-                    // Match
-                    matches.push_back(set.index);
+                    // Potential
+                    if (sameRule(item.rule, searchItem.rule))
+                    {
+                        // Match
+                        matches.push_back(set.index);
+                    }
                 }
             }
         }
@@ -59,20 +66,35 @@ vector<int> searchSets(vector<ItemSet> itemSets, Item searchItem)
     return matches;
 }
 
-ActionTable buildActionTable(vector<ItemSet> itemSets)
+ActionTable buildActionTable(vector<ItemSet> itemSets, CFG cfg)
 {
+    // Combine sets
+
+    set<string> header(cfg.terminals);
+    header.insert(cfg.nonTerminals.begin(), cfg.nonTerminals.end());
+
     for (auto set : itemSets)
     {
         for (auto rule : set.itemSet)
         {
             // S-> fa*
-            vector<int> matches = searchSets(itemSets, rule);
+            vector<int> matches = searchSets(itemSets, rule, header);
             {
                 if (matches.size() > 0)
                 {
                     ActionGoTO entry;
                     entry.action = Shift;
                     entry.goTo = matches[0]; // Doesnt handle conflic
+
+                    SlrRow row;
+                    row.entries.push_back(entry);
+                    actionTable.rows.push_back(row);
+                }
+                else
+                {
+                    ActionGoTO entry;
+                    entry.action = None;
+                    entry.goTo = -1; // Doesnt handle conflic
 
                     SlrRow row;
                     row.entries.push_back(entry);

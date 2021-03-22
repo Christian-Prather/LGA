@@ -22,6 +22,7 @@
 #include "include/item.h"
 #include "include/closure.h"
 #include "include/goTo.h"
+#include "include/actionTable.h"
 
 using namespace std;
 
@@ -154,6 +155,12 @@ int main(int argc, char **argv)
     for (auto set : itemSets)
     {
         printItemSet(set);
+    }
+
+    // Set final sets index
+    for (int i = 0; i < itemSets.size(); i++)
+    {
+        itemSets[i].index = i;
     }
 
     //}

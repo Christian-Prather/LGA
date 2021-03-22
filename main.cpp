@@ -22,6 +22,7 @@
 #include "include/item.h"
 #include "include/closure.h"
 #include "include/goTo.h"
+#include "include/ll-tabular-parsing.h"
 
 using namespace std;
 
@@ -149,7 +150,8 @@ int main(int argc, char **argv)
             newSet = closure(newSet, cfg);
             itemSets.push_back(newSet);
         }
-    }
+    buildTable(cfg);
+
     cout << "GOTO:///////////////////////////////" << endl;
     for (auto set : itemSets)
     {

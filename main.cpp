@@ -150,7 +150,6 @@ int main(int argc, char **argv)
             newSet = closure(newSet, cfg);
             itemSets.push_back(newSet);
         }
-    buildTable(cfg);
 
     cout << "GOTO:///////////////////////////////" << endl;
     for (auto set : itemSets)

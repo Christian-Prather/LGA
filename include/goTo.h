@@ -6,29 +6,37 @@
 
 #include "cfg.h"
 #include "item.h"
+#include "closure.h"
 
 using namespace std;
 
-Item goTo(Item item)
-{
-    Item updatedItem;
-    updatedItem.progressMarkerIndex = item.progressMarkerIndex;
-    updatedItem.rule = item.rule;
-
-    updatedItem.progressMarkerIndex++;
-    return updatedItem;
-}
-
 bool symbolRight(string symbol, Item item)
 {
-    // for (int i = item.progressMarkerIndex; i < item.progressMarkerIndex + 2; i++)
-    // {
-        if (item.rule.RHS[item.progressMarkerIndex] == symbol)
-        {
-            return true;
-        }
-    // }
+    if (item.rule.RHS[item.progressMarkerIndex] == symbol)
+    {
+        return true;
+    }
     return false;
+}
+
+ItemSet goTo(ItemSet itemSet, string symbol, CFG grammar)
+{
+    ItemSet gotoSet;
+    gotoSet.parentItemSetGrammarSymbol = symbol;
+    gotoSet.parentItemSetIndex = itemSet.index;
+
+    for (Item item : itemSet.itemSet)
+    {
+        if (symbolRight(symbol, item))
+        {
+            Item newItem = item;
+            progress(newItem);
+            gotoSet.itemSet.push_back(newItem);
+        }
+    }
+    gotoSet = closure(gotoSet, grammar);
+
+    return gotoSet;
 }
 
 #endif

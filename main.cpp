@@ -24,6 +24,7 @@
 #include "include/goTo.h"
 #include "include/ll-tabular-parsing.h"
 #include "include/actionTable.h"
+#include "include/ll-tabular-parsing.h"
 
 using namespace std;
 

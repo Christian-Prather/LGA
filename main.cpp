@@ -23,6 +23,7 @@
 #include "include/closure.h"
 #include "include/goTo.h"
 #include "include/actionTable.h"
+#include "include/ll-tabular-parsing.h"
 
 using namespace std;
 

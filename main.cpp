@@ -28,7 +28,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/biglanguage_grammar.cfg";
+    string inputFile = "../testFiles/lecture_example.txt";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
@@ -102,60 +102,45 @@ int main(int argc, char **argv)
         }
     }
 
-    ItemSet itSet;
-    itSet.itemSet = vecItem;
-    itSet.parentItemSetGrammarSymbol = cfg.startSymbol;
-    itSet.parentItemSetIndex = 0;
+    ItemSet itemSet;
+    itemSet.itemSet = vecItem;
+    itemSet.parentItemSetGrammarSymbol = cfg.startSymbol;
+    itemSet.parentItemSetIndex = 0;
 
     cout << "Original Item Set:\n";
-    printItemSet(itSet);
+    printItemSet(itemSet);
     cout << "Item Set After Closure:\n";
-    itSet = closure(itSet, cfg);
-    printItemSet(itSet);
+    itemSet = closure(itemSet, cfg);
+    itemSet.index = 0;
+    printItemSet(itemSet);
+
     vector<ItemSet> itemSets;
-    itemSets.push_back(itSet);
-    for (auto symbol : cfg.terminals)
+    itemSets.push_back(itemSet);
+
+    for (string symbol : cfg.terminals)
     {
-        ItemSet newSet;
-        for (auto item : itSet.itemSet)
+        ItemSet newSet = goTo(itemSet, symbol, cfg);
+        if (!newSet.itemSet.empty())
         {
-            if (symbolRight(symbol, item))
-            {
-                Item newItem = goTo(item);
-                newSet.itemSet.push_back(newItem);
-            }
+            newSet.index = itemSets.size();
+            itemSets.push_back(newSet);
         }
-        newSet = closure(newSet, cfg);
-        itemSets.push_back(newSet);
     }
 
     for (auto symbol : cfg.nonTerminals)
     {
-        ItemSet newSet;
-        for (auto item : itSet.itemSet)
-        {
-            if (symbolRight(symbol, item))
-            {
-                Item newItem = goTo(item);
-                newSet.itemSet.push_back(newItem);
-            }
-        }
+        ItemSet newSet = goTo(itemSet, symbol, cfg);
         if (!newSet.itemSet.empty())
         {
-            newSet = closure(newSet, cfg);
+            newSet.index = itemSets.size();
             itemSets.push_back(newSet);
         }
     }
+
     cout << "GOTO:///////////////////////////////" << endl;
     for (auto set : itemSets)
     {
         printItemSet(set);
-    }
-
-    // Set final sets index
-    for (int i = 0; i < itemSets.size(); i++)
-    {
-        itemSets[i].index = i;
     }
 
     auto actionTable = buildActionTable(itemSets, cfg);

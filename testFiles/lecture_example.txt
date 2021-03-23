@@ -1,0 +1,8 @@
+S -> A B $
+S -> B C $
+A -> A x 
+A -> x 
+B -> y A B 
+B -> h 
+C -> x C y 
+C -> p

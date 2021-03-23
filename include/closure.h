@@ -16,10 +16,11 @@
  */
 ItemSet closure(ItemSet initial, CFG grammar)
 {
-    auto prev = initial;
-    auto copy = initial;
+    ItemSet C = initial;
+    int cSize;
 
-    if (initial.itemSet.empty()) {
+    if (initial.itemSet.empty())
+    {
         return initial;
     }
 
@@ -27,37 +28,43 @@ ItemSet closure(ItemSet initial, CFG grammar)
     // The nonterminals we have already added so we don't re-add them
     added.insert(initial.itemSet[0].rule.LHS);
 
-    do {
-        prev = copy;
-
-        for (Item item : prev.itemSet) {
-            if (item.rule.RHS.size() > item.progressMarkerIndex) {
+    while (C.itemSet.size() != cSize)
+    {
+        cSize = C.itemSet.size();
+        for (Item item : C.itemSet)
+        {
+            if (item.rule.RHS.size() > item.progressMarkerIndex)
+            {
                 // Not on last
-                if (isupper(item.rule.RHS[item.progressMarkerIndex][0])) {
+                if (isupper(item.rule.RHS[item.progressMarkerIndex][0]))
+                {
                     // Is nonterminal
                     auto nonterminal = item.rule.RHS[item.progressMarkerIndex];
 
-                    if (added.find(nonterminal) != added.end()) {
+                    if (added.find(nonterminal) != added.end())
+                    {
                         // Already added fresh starts for this nonterminal
                         continue;
                     }
 
                     added.insert(nonterminal);
 
-                    for (auto rule : grammar.rules) {
-                        if (rule.LHS == nonterminal) {
+                    for (auto rule : grammar.rules)
+                    {
+                        if (rule.LHS == nonterminal)
+                        {
                             Item next;
                             next.rule = rule;
                             next.progressMarkerIndex = 0;
-                            copy.itemSet.push_back(next);
+                            C.itemSet.push_back(next);
                         }
                     }
                 }
             }
         }
-    } while (prev.itemSet.size() != copy.itemSet.size());
+    }
 
-    return prev;
+    return C;
 }
 
 /**
@@ -73,8 +80,10 @@ ItemSet testClosure(string nonterminal, CFG cfg)
     ItemSet test;
     test.parentItemSetGrammarSymbol = nonterminal;
 
-    for (auto rule : cfg.rules) {
-        if (rule.LHS == nonterminal) {
+    for (auto rule : cfg.rules)
+    {
+        if (rule.LHS == nonterminal)
+        {
             Item item;
             item.progressMarkerIndex = 0;
             item.rule = rule;
@@ -86,6 +95,5 @@ ItemSet testClosure(string nonterminal, CFG cfg)
     auto result = closure(test, cfg);
     return result;
 }
-
 
 #endif //LGA_CLOSURE_H

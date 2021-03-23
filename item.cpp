@@ -12,7 +12,7 @@ string progress(Item &item)
 }
 
 void printItemSet(ItemSet iSet) {
-    cout << "*** ITEM SET ***\n";
+    cout << "*** ITEM SET " << iSet.index << " ***\n";
     cout << "Parent Item Set Index: " << iSet.parentItemSetIndex << endl;
     cout << "Parent Item Set Grammar Symbol: " << iSet.parentItemSetGrammarSymbol << endl;
     cout << "Rules:\n";

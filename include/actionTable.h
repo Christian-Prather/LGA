@@ -44,7 +44,6 @@ bool sameRule(Rule one, Rule two)
 // Searches for shifts
 int searchSets(vector<ItemSet> itemSets, ItemSet searchItemSet)
 {
-    int index;
     for (auto itemSet : itemSets)
     {
         bool matchSet = false;
@@ -74,7 +73,7 @@ int searchSets(vector<ItemSet> itemSets, ItemSet searchItemSet)
             }
         }
     }
-    return index;
+    return -1;
 }
 
 int grammarRule(vector<string> rhs, CFG cfg)
@@ -90,13 +89,9 @@ int grammarRule(vector<string> rhs, CFG cfg)
     return -1;
 }
 
-ActionTable buildActionTable(vector<ItemSet> itemSets, CFG cfg)
+ActionTable buildActionTable(vector<ItemSet> itemSets, CFG cfg, vector<string> symbols)
 {
     ActionTable actionTable;
-
-    // Combine sets
-    set<string> symbols(cfg.terminals);
-    symbols.insert(cfg.nonTerminals.begin(), cfg.nonTerminals.end());
 
     for (ItemSet itemSet : itemSets)
     {
@@ -144,7 +139,7 @@ ActionTable buildActionTable(vector<ItemSet> itemSets, CFG cfg)
                             if (f == *terminalsIt)
                             {
                                 row.entries[i].action = Reduce;
-                                row.entries[i].goTo = grammar;
+                                row.entries[i].goTo = grammar + 1;
                             }
                         }
                         terminalsIt++;

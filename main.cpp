@@ -15,6 +15,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <map>
 
 #include "include/cfg.h"
 #include "include/predict.h"
@@ -106,7 +107,6 @@ int main(int argc, char **argv)
     ItemSet itemSet;
     itemSet.itemSet = vecItem;
     itemSet.parentItemSetGrammarSymbol = cfg.startSymbol;
-    itemSet.parentItemSetIndex = 0;
 
     cout << "Original Item Set:\n";
     printItemSet(itemSet);
@@ -118,23 +118,64 @@ int main(int argc, char **argv)
     vector<ItemSet> itemSets;
     itemSets.push_back(itemSet);
 
-    for (string symbol : cfg.terminals)
+    struct Graph
     {
-        ItemSet newSet = goTo(itemSet, symbol, cfg);
-        if (!newSet.itemSet.empty())
+        int pointsTo;
+        string symbol;
+    };
+    map<int, vector<Graph>> itemSetMap;
+
+    set<int> doneSets;
+    // Combine sets
+    vector<string> symbols;
+    for (string s : cfg.terminals)
+    {
+        symbols.push_back(s);
+    }
+    symbols.push_back("$");
+    for (string s : cfg.nonTerminals)
+    {
+        if (s != cfg.startSymbol)
         {
-            newSet.index = itemSets.size();
-            itemSets.push_back(newSet);
+            symbols.push_back(s);
         }
     }
 
-    for (auto symbol : cfg.nonTerminals)
+    int setSize;
+    while (itemSets.size() != setSize)
     {
-        ItemSet newSet = goTo(itemSet, symbol, cfg);
-        if (!newSet.itemSet.empty())
+        setSize = itemSets.size();
+        for (ItemSet set : itemSets)
         {
-            newSet.index = itemSets.size();
-            itemSets.push_back(newSet);
+            if (doneSets.find(set.index) == doneSets.end())
+            {
+                for (string symbol : symbols)
+                {
+                    ItemSet newSet = goTo(set, symbol, cfg);
+                    int gotoSetIndex = searchSets(itemSets, newSet);
+                    if (gotoSetIndex == -1)
+                    {
+                        if (!newSet.itemSet.empty())
+                        {
+                            newSet.index = itemSets.size();
+                            itemSets.push_back(newSet);
+
+                            Graph graphEntry;
+                            graphEntry.pointsTo = newSet.index;
+                            graphEntry.symbol = symbol;
+                            itemSetMap[set.index].push_back(graphEntry);
+                        }
+                    }
+                    else
+                    {
+                        Graph graphEntry;
+                        graphEntry.pointsTo = gotoSetIndex;
+                        graphEntry.symbol = symbol;
+                        itemSetMap[set.index].push_back(graphEntry);
+                    }
+                }
+                doneSets.insert(set.index);
+            }
         }
     }
 
@@ -144,7 +185,7 @@ int main(int argc, char **argv)
         printItemSet(set);
     }
 
-    auto actionTable = buildActionTable(itemSets, cfg);
+    auto actionTable = buildActionTable(itemSets, cfg, symbols);
 
     return 0;
 }

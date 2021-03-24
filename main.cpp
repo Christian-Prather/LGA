@@ -29,7 +29,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/lecture_example.txt";
+    string inputFile = "../testFiles/lecture_example2.txt";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
@@ -145,4 +145,6 @@ int main(int argc, char **argv)
     }
 
     auto actionTable = buildActionTable(itemSets, cfg);
+
+    return 0;
 }

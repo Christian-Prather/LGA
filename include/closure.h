@@ -28,6 +28,8 @@ ItemSet closure(ItemSet initial, CFG grammar)
     // The nonterminals we have already added so we don't re-add them
     added.insert(initial.itemSet[0].rule.LHS);
 
+    bool cont = false;
+
     while (C.itemSet.size() != cSize)
     {
         cSize = C.itemSet.size();
@@ -43,8 +45,16 @@ ItemSet closure(ItemSet initial, CFG grammar)
 
                     if (added.find(nonterminal) != added.end())
                     {
-                        // Already added fresh starts for this nonterminal
-                        continue;
+                        if (nonterminal != initial.itemSet[0].rule.LHS)
+                        {
+                            // Already added fresh starts for this nonterminal
+                            continue;
+                        }
+                        if (cont)
+                        {
+                            continue;
+                        }
+                        cont = true;
                     }
 
                     added.insert(nonterminal);

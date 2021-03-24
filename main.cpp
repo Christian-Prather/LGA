@@ -145,8 +145,9 @@ int main(int argc, char **argv)
     while (itemSets.size() != setSize)
     {
         setSize = itemSets.size();
-        for (ItemSet set : itemSets)
+        for (int i = 0; i < setSize; i++)
         {
+            ItemSet set = itemSets.at(i);
             if (doneSets.find(set.index) == doneSets.end())
             {
                 for (string symbol : symbols)
@@ -186,6 +187,7 @@ int main(int argc, char **argv)
     }
 
     auto actionTable = buildActionTable(itemSets, cfg, symbols);
+    printActionTable(actionTable, symbols);
 
     return 0;
 }

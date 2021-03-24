@@ -42,6 +42,7 @@ bool sameRule(Rule one, Rule two)
 }
 
 // Searches for shifts
+// Find the index of the goto set
 int searchSets(vector<ItemSet> itemSets, ItemSet searchItemSet)
 {
     for (auto itemSet : itemSets)
@@ -144,12 +145,67 @@ ActionTable buildActionTable(vector<ItemSet> itemSets, CFG cfg, vector<string> s
                         }
                         terminalsIt++;
                     }
+                    int find$ = 0;
+                    for (string s : symbols)
+                    {
+                        if (s == "$")
+                        {
+                            break;
+                        }
+                        find$++;
+                    }
+                    row.entries[find$].action = Reduce;
+                    row.entries[find$].goTo = grammar + 1;
+                }
+            }
+
+            int in = item.rule.RHS.size();
+            if ((item.progressMarkerIndex == item.rule.RHS.size()) && (item.rule.LHS == cfg.startSymbol) && (item.rule.RHS[in - 1] == "$"))
+            {
+                int grammar = grammarRule(item.rule.RHS, cfg);
+
+                for (int i = 0; i < symbols.size(); i++)
+                {
+                    row.entries[i].action = Reduce;
+                    row.entries[i].goTo = grammar + 1;
                 }
             }
         }
         actionTable.rows.push_back(row);
     }
     return actionTable;
+}
+
+void printActionTable(ActionTable actionTable, vector<string> symbols)
+{
+    cout << " ";
+    for (string s : symbols)
+    {
+        cout << " " << s << " ";
+    }
+    cout << endl;
+    int rowCount = 0;
+    for (SlrRow row : actionTable.rows)
+    {
+        cout << rowCount;
+        for (ActionGoTO entry : row.entries)
+        {
+            if (entry.action == Shift)
+            {
+                cout << " sh-" << entry.goTo << " ";
+            }
+            else if (entry.action == Reduce)
+            {
+                cout << " r-" << entry.goTo << " ";
+            }
+            else
+            {
+                cout << "   ";
+            }
+        }
+        cout << endl;
+        rowCount++;
+    }
 }
 
 #endif

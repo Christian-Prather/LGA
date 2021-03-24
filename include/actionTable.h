@@ -2,7 +2,11 @@
 #define ACTION_TABLE_H
 
 #include <vector>
+
 #include "item.h"
+#include "follow.h"
+#include "goTo.h"
+
 using namespace std;
 
 enum Action
@@ -37,36 +41,41 @@ bool sameRule(Rule one, Rule two)
     return false;
 }
 
-ActionTable actionTable;
-
 // Searches for shifts
-vector<int> searchSets(vector<ItemSet> itemSets, Item searchItem, set<string> headerRow)
+// Find the index of the goto set
+int searchSets(vector<ItemSet> itemSets, ItemSet searchItemSet)
 {
-    vector<int> matches;
-
-    for (auto set : itemSets)
+    for (auto itemSet : itemSets)
     {
-        for (auto item : set.itemSet)
+        bool matchSet = false;
+        if (itemSet.itemSet.size() != searchItemSet.itemSet.size())
         {
-            for (auto character : headerRow)
-            {
+            continue;
+        }
+        for (int i = 0; i < searchItemSet.itemSet.size(); i++)
+        {
+            auto searchItem = searchItemSet.itemSet[i];
+            bool matchItem = false;
 
-                if (item.progressMarkerIndex == searchItem.progressMarkerIndex + 1 && item.rule.RHS[item.progressMarkerIndex] == character)
+            for (Item item : itemSet.itemSet)
+            {
+                if ((sameRule(item.rule, searchItem.rule)) && (item.progressMarkerIndex == searchItem.progressMarkerIndex))
                 {
-                    // Potential
-                    if (sameRule(item.rule, searchItem.rule))
-                    {
-                        // Match
-                        matches.push_back(set.index);
-                    }
+                    matchItem = true;
                 }
+            }
+            if (!matchItem)
+            {
+                break;
+            }
+            if (i == searchItemSet.itemSet.size() - 1)
+            {
+                return itemSet.index;
             }
         }
     }
-    return matches;
+    return -1;
 }
-
-// vector<int> reduce(vector<ItemSet> ItemSets, Item )
 
 int grammarRule(vector<string> rhs, CFG cfg)
 {
@@ -81,49 +90,48 @@ int grammarRule(vector<string> rhs, CFG cfg)
     return -1;
 }
 
-ActionTable buildActionTable(vector<ItemSet> itemSets, CFG cfg)
+ActionTable buildActionTable(vector<ItemSet> itemSets, CFG cfg, vector<string> symbols)
 {
-    // Combine sets
+    ActionTable actionTable;
 
-    set<string> header(cfg.terminals);
-    header.insert(cfg.nonTerminals.begin(), cfg.nonTerminals.end());
-
-    for (auto itemSet : itemSets)
+    for (ItemSet itemSet : itemSets)
     {
-        for (auto rule : itemSet.itemSet)
+        // Initialize Row
+        SlrRow row;
+        for (int i = 0; i < symbols.size(); i++)
         {
-            // S-> fa*
-            // Intialixe Row
-            SlrRow row;
-            for (int i = 0; i < header.size(); i++)
+            ActionGoTO entity;
+            entity.action = None;
+            entity.goTo = -1;
+            row.entries.push_back(entity);
+        }
+        for (Item item : itemSet.itemSet)
+        {
+            if (item.progressMarkerIndex < item.rule.RHS.size())
             {
-                ActionGoTO entity;
-                entity.action = None;
-                entity.goTo = -1;
-                row.entries.push_back(entity);
+                string X = item.rule.RHS[item.progressMarkerIndex];
+                int xIndex = 0;
+                for (string symbol : symbols)
+                {
+                    if (symbol == X)
+                    {
+                        break;
+                    }
+                    xIndex++;
+                }
+                row.entries[xIndex].action = Shift;
+                ItemSet gotoSet = goTo(itemSet, X, cfg);
+                int gotoSetIndex = searchSets(itemSets, gotoSet);
+                row.entries[xIndex].goTo = gotoSetIndex;
             }
 
-            vector<int> matches = searchSets(itemSets, rule, header);
-
-            if (matches.size() > 0)
+            else if (item.progressMarkerIndex == item.rule.RHS.size())
             {
-                ActionGoTO entry;
-                entry.action = Shift;
-                entry.goTo = matches[0]; // Doesnt handle conflic
-
-                // SlrRow row;
-                row.entries.push_back(entry);
-                actionTable.rows.push_back(row);
-                continue;
-            }
-
-            if (rule.progressMarkerIndex == rule.rule.RHS.size() - 1)
-            {
-                int grammar = grammarRule(rule.rule.RHS, cfg);
+                int grammar = grammarRule(item.rule.RHS, cfg);
                 if (grammar != -1)
                 {
                     set<string> followT;
-                    FollowResult follow = followSet(rule.rule.LHS, followT, cfg);
+                    FollowResult follow = followSet(item.rule.LHS, followT, cfg);
                     set<string>::iterator terminalsIt = cfg.terminals.begin();
                     for (int i = 0; i < cfg.terminals.size(); i++)
                     {
@@ -132,29 +140,71 @@ ActionTable buildActionTable(vector<ItemSet> itemSets, CFG cfg)
                             if (f == *terminalsIt)
                             {
                                 row.entries[i].action = Reduce;
-                                row.entries[i].goTo = grammar;
-                                // row.[i] = entry;
+                                row.entries[i].goTo = grammar + 1;
                             }
                         }
                         terminalsIt++;
                     }
-                    set<string>::iterator nonTerminalsIt = cfg.terminals.begin();
-
-                    for (int i = 0; i < cfg.nonTerminals.size(); i++)
+                    int find$ = 0;
+                    for (string s : symbols)
                     {
-                        for (string f : follow.F)
+                        if (s == "$")
                         {
-                            if (f == *nonTerminalsIt)
-                            {
-                                row.entries[i].action = Reduce;
-                                row.entries[i].goTo = grammar;
-                            }
+                            break;
                         }
-                        nonTerminalsIt++;
+                        find$++;
                     }
+                    row.entries[find$].action = Reduce;
+                    row.entries[find$].goTo = grammar + 1;
+                }
+            }
+
+            int in = item.rule.RHS.size();
+            if ((item.progressMarkerIndex == item.rule.RHS.size()) && (item.rule.LHS == cfg.startSymbol) && (item.rule.RHS[in - 1] == "$"))
+            {
+                int grammar = grammarRule(item.rule.RHS, cfg);
+
+                for (int i = 0; i < symbols.size(); i++)
+                {
+                    row.entries[i].action = Reduce;
+                    row.entries[i].goTo = grammar + 1;
                 }
             }
         }
+        actionTable.rows.push_back(row);
+    }
+    return actionTable;
+}
+
+void printActionTable(ActionTable actionTable, vector<string> symbols)
+{
+    cout << " ";
+    for (string s : symbols)
+    {
+        cout << " " << s << " ";
+    }
+    cout << endl;
+    int rowCount = 0;
+    for (SlrRow row : actionTable.rows)
+    {
+        cout << rowCount;
+        for (ActionGoTO entry : row.entries)
+        {
+            if (entry.action == Shift)
+            {
+                cout << " sh-" << entry.goTo << " ";
+            }
+            else if (entry.action == Reduce)
+            {
+                cout << " r-" << entry.goTo << " ";
+            }
+            else
+            {
+                cout << "   ";
+            }
+        }
+        cout << endl;
+        rowCount++;
     }
 }
 

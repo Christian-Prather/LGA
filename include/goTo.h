@@ -23,7 +23,6 @@ ItemSet goTo(ItemSet itemSet, string symbol, CFG grammar)
 {
     ItemSet gotoSet;
     gotoSet.parentItemSetGrammarSymbol = symbol;
-    gotoSet.parentItemSetIndex = itemSet.index;
 
     for (Item item : itemSet.itemSet)
     {

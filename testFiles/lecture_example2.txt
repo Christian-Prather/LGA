@@ -1,0 +1,3 @@
+S -> E $
+E -> plus E E
+E -> num

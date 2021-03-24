@@ -26,7 +26,6 @@ struct Item
 struct ItemSet
 {
     vector<Item> itemSet;
-    int parentItemSetIndex;
     string parentItemSetGrammarSymbol;
     int index;
 };

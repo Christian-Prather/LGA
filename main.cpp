@@ -17,20 +17,24 @@
 #include <algorithm>
 #include <map>
 
-#include "include/cfg.h"
+//#include "include/cfg.h"
+#include "include/derivesToLambda.h"
 #include "include/predict.h"
-#include "include/ll-table.h"
-#include "include/item.h"
-#include "include/closure.h"
-#include "include/goTo.h"
+#include "include/first.h"
+//#include "include/ll-table.h"
+//#include "include/item.h"
+//#include "include/closure.h"
+//#include "include/goTo.h"
 #include "include/actionTable.h"
-#include "include/ll-tabular-parsing.h"
+//#include "include/ll-tabular-parsing.h"
+#include "include/regex.h"
+#include "include/parser.h"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/lecture_example2.txt";
+    string inputFile = "../testFiles/llre.cfg";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);
@@ -189,5 +193,10 @@ int main(int argc, char **argv)
     auto actionTable = buildActionTable(itemSets, cfg, symbols);
     printActionTable(actionTable, symbols);
 
+    string regex_input = "a-d.q(A|B|)*de+";
+    auto regex_tokens = scan_regex(regex_input);
+
+    Node rootTree = buildRawParseTree(cfg, llTable, regex_tokens);
+    //auto root = LLTabularParsing()
     return 0;
 }

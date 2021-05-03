@@ -33,7 +33,7 @@ set<string> predictSet(Rule rule, CFG cfg)
     if (first.F.empty())
     {
         cout << "Computed by: FollowSet(LHS)" << endl;
-        predict = follow.F;
+        predict = setUnion(follow.F, first.T);
     }
     else 
     {

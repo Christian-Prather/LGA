@@ -25,6 +25,18 @@ FirstResult firstSet(vector<string> XB, set<string> T, CFG cfg)
     set<string> F;
     FirstResult result;
 
+    for (string check : XB)
+    {
+        if (check == "$")
+        {
+            result.F.insert("$");
+        }
+    }
+    if (X == "lambda")
+    {
+        return result;
+    }
+
     if (cfg.terminals.find(X) != cfg.terminals.end())
     {
         F.insert(X);

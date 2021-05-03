@@ -15,6 +15,31 @@ struct FollowResult
     set<string> T;
 };
 
+bool checkForTerminal(vector<string> XB, CFG cfg)
+{
+    for (string X : XB)
+    {
+        if (cfg.terminals.find(X) != cfg.terminals.end())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool checkAllLambda(vector<string> XB, CFG cfg)
+{
+    for (string C : XB)
+    {
+        stack<Rule> T;
+        if (!derivesToLambda(C, T, cfg))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 FollowResult followSet(string A, set<string> T, CFG cfg)
 {
     FollowResult followResult;
@@ -47,12 +72,15 @@ FollowResult followSet(string A, set<string> T, CFG cfg)
                     auto G = firstResult.F;
                     F = setUnion(F, G);
                 }
-                else
+                bool terminalHere = checkForTerminal(XB, cfg);
+                bool allDerivesToLambda = checkAllLambda(XB, cfg);
+                if ((XB.empty()) || ((!terminalHere) && (allDerivesToLambda)))
                 {
                     FollowResult followtResult = followSet(rule.LHS, T, cfg);
                     auto G = followtResult.F;
                     F = setUnion(F, G);
                 }
+
                 continue;
             }
             count++;

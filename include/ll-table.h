@@ -33,26 +33,48 @@ Table buildTable(CFG cfg)
         for (int i = 0; i < llTable.headerRow.size(); i++)
         {
             string terminal = llTable.headerRow[i];
-            // This terminal is in the predict set so mark the table
-            // with the rule
-            if (predict.count(terminal) > 0)
+
+            if (terminal == "$")
             {
-                // See if terminal looked at befor
-                if (row.size() <= i)
+                if (find(rule.RHS.begin(), rule.RHS.end(), "lambda") != rule.RHS.end())
                 {
-                    row.push_back(rule.identity);
+                    if (row.size() <= i)
+                    {
+                        row.push_back(rule.identity);
+                    }
+                    else
+                    {
+                        row[i] = rule.identity;
+                    }
                 }
                 else
                 {
-                    row[i] = rule.identity;
+                    row.push_back(0);
                 }
             }
             else
             {
-                // Not there check if there is already an enrty in cell
-                if (row.size() <= i)
+                // This terminal is in the predict set so mark the table
+                // with the rule
+                if (predict.count(terminal) > 0)
                 {
-                    row.push_back(NA);
+                    // See if terminal looked at befor
+                    if (row.size() <= i)
+                    {
+                        row.push_back(rule.identity);
+                    }
+                    else
+                    {
+                        row[i] = rule.identity;
+                    }
+                }
+                else
+                {
+                    // Not there check if there is already an enrty in cell
+                    if (row.size() <= i)
+                    {
+                        row.push_back(NA);
+                    }
                 }
             }
         }

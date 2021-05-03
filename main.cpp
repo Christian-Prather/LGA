@@ -30,7 +30,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/lecture_example2.txt";
+    string inputFile = "../llre.cfg";
 
     CFG cfg = readCfg(inputFile);
     printOutput(cfg);

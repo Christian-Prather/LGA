@@ -1,16 +1,18 @@
 #include "include/derivesToLambda.h"
 
+bool allderivelambda = true;
+
 bool prodRuleIsInStack(Rule p, stack<Rule> T)
 {
-    stack<Rule> T_copy = T;
-
-    while ((!T_copy.empty()) && (T_copy.top().LHS != p.LHS) && (T_copy.top().RHS != p.RHS))
+    auto T_copy = T;
+    while (!T_copy.empty())
     {
+        auto rule = T_copy.top();
         T_copy.pop();
-    }
-    if (!T_copy.empty())
-    {
-        return true;
+        if (rule.LHS == p.LHS && rule.RHS == p.RHS)
+        {
+            return true;
+        }
     }
     return false;
 }
@@ -30,22 +32,24 @@ bool derivesToLambda(string L, stack<Rule> T, CFG cfg)
             {
                 return true;
             }
-            bool allderivelambda = true;
             // foreach ( Xi ∈ N in RHS of p )
             for (string X : p.RHS)
             {
                 if (X == "$")
                 {
-                    continue;
+                    goto cont;
                 }
                 if (find(cfg.terminals.begin(), cfg.terminals.end(), X) != cfg.terminals.end())
                 {
                     goto cont;
                 }
+            }
+
+            allderivelambda = true;
+            for (string X : p.RHS)
+            {
                 T.push(p);
-
                 allderivelambda = derivesToLambda(X, T, cfg);
-
                 T.pop();
 
                 if (!allderivelambda)
@@ -58,6 +62,7 @@ bool derivesToLambda(string L, stack<Rule> T, CFG cfg)
                 return true;
             }
         }
+
     cont:;
     }
     return false;

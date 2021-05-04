@@ -96,102 +96,102 @@ int main(int argc, char **argv)
 
     Table llTable = buildTable(cfg);
 
-    vector<Item> vecItem;
-    for (Rule r : cfg.rules)
-    {
-        if (r.LHS == cfg.startSymbol)
-        {
-            Item t;
-            t.rule = r;
-            t.progressMarkerIndex = 0;
-            vecItem.push_back(t);
-        }
-    }
+    // vector<Item> vecItem;
+    // for (Rule r : cfg.rules)
+    // {
+    //     if (r.LHS == cfg.startSymbol)
+    //     {
+    //         Item t;
+    //         t.rule = r;
+    //         t.progressMarkerIndex = 0;
+    //         vecItem.push_back(t);
+    //     }
+    // }
 
-    ItemSet itemSet;
-    itemSet.itemSet = vecItem;
-    itemSet.parentItemSetGrammarSymbol = cfg.startSymbol;
+    // ItemSet itemSet;
+    // itemSet.itemSet = vecItem;
+    // itemSet.parentItemSetGrammarSymbol = cfg.startSymbol;
 
-    cout << "Original Item Set:\n";
-    printItemSet(itemSet);
-    cout << "Item Set After Closure:\n";
-    itemSet = closure(itemSet, cfg);
-    itemSet.index = 0;
-    printItemSet(itemSet);
+    // cout << "Original Item Set:\n";
+    // printItemSet(itemSet);
+    // cout << "Item Set After Closure:\n";
+    // itemSet = closure(itemSet, cfg);
+    // itemSet.index = 0;
+    // printItemSet(itemSet);
 
-    vector<ItemSet> itemSets;
-    itemSets.push_back(itemSet);
+    // vector<ItemSet> itemSets;
+    // itemSets.push_back(itemSet);
 
-    struct Graph
-    {
-        int pointsTo;
-        string symbol;
-    };
-    map<int, vector<Graph>> itemSetMap;
+    // struct Graph
+    // {
+    //     int pointsTo;
+    //     string symbol;
+    // };
+    // map<int, vector<Graph>> itemSetMap;
 
-    set<int> doneSets;
-    // Combine sets
-    vector<string> symbols;
-    for (string s : cfg.terminals)
-    {
-        symbols.push_back(s);
-    }
-    symbols.push_back("$");
-    for (string s : cfg.nonTerminals)
-    {
-        if (s != cfg.startSymbol)
-        {
-            symbols.push_back(s);
-        }
-    }
+    // set<int> doneSets;
+    // // Combine sets
+    // vector<string> symbols;
+    // for (string s : cfg.terminals)
+    // {
+    //     symbols.push_back(s);
+    // }
+    // symbols.push_back("$");
+    // for (string s : cfg.nonTerminals)
+    // {
+    //     if (s != cfg.startSymbol)
+    //     {
+    //         symbols.push_back(s);
+    //     }
+    // }
 
-    int setSize;
-    while (itemSets.size() != setSize)
-    {
-        setSize = itemSets.size();
-        for (int i = 0; i < setSize; i++)
-        {
-            ItemSet set = itemSets.at(i);
-            if (doneSets.find(set.index) == doneSets.end())
-            {
-                for (string symbol : symbols)
-                {
-                    ItemSet newSet = goTo(set, symbol, cfg);
-                    int gotoSetIndex = searchSets(itemSets, newSet);
-                    if (gotoSetIndex == -1)
-                    {
-                        if (!newSet.itemSet.empty())
-                        {
-                            newSet.index = itemSets.size();
-                            itemSets.push_back(newSet);
+    // int setSize;
+    // while (itemSets.size() != setSize)
+    // {
+    //     setSize = itemSets.size();
+    //     for (int i = 0; i < setSize; i++)
+    //     {
+    //         ItemSet set = itemSets.at(i);
+    //         if (doneSets.find(set.index) == doneSets.end())
+    //         {
+    //             for (string symbol : symbols)
+    //             {
+    //                 ItemSet newSet = goTo(set, symbol, cfg);
+    //                 int gotoSetIndex = searchSets(itemSets, newSet);
+    //                 if (gotoSetIndex == -1)
+    //                 {
+    //                     if (!newSet.itemSet.empty())
+    //                     {
+    //                         newSet.index = itemSets.size();
+    //                         itemSets.push_back(newSet);
 
-                            Graph graphEntry;
-                            graphEntry.pointsTo = newSet.index;
-                            graphEntry.symbol = symbol;
-                            itemSetMap[set.index].push_back(graphEntry);
-                        }
-                    }
-                    else
-                    {
-                        Graph graphEntry;
-                        graphEntry.pointsTo = gotoSetIndex;
-                        graphEntry.symbol = symbol;
-                        itemSetMap[set.index].push_back(graphEntry);
-                    }
-                }
-                doneSets.insert(set.index);
-            }
-        }
-    }
+    //                         Graph graphEntry;
+    //                         graphEntry.pointsTo = newSet.index;
+    //                         graphEntry.symbol = symbol;
+    //                         itemSetMap[set.index].push_back(graphEntry);
+    //                     }
+    //                 }
+    //                 else
+    //                 {
+    //                     Graph graphEntry;
+    //                     graphEntry.pointsTo = gotoSetIndex;
+    //                     graphEntry.symbol = symbol;
+    //                     itemSetMap[set.index].push_back(graphEntry);
+    //                 }
+    //             }
+    //             doneSets.insert(set.index);
+    //         }
+    //     }
+    // }
 
-    cout << "GOTO:///////////////////////////////" << endl;
-    for (auto set : itemSets)
-    {
-        printItemSet(set);
-    }
+    // cout << "GOTO:///////////////////////////////" << endl;
+    // for (auto set : itemSets)
+    // {
+    //     printItemSet(set);
+    // }
 
-    auto actionTable = buildActionTable(itemSets, cfg, symbols);
-    printActionTable(actionTable, symbols);
+    // auto actionTable = buildActionTable(itemSets, cfg, symbols);
+    // printActionTable(actionTable, symbols);
 
     string regex_input = "a-d.q(A|B|)*de+";
     auto regex_tokens = scan_regex(regex_input);

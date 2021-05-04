@@ -1,5 +1,6 @@
 #include "include/ll-table.h"
 #include "include/predict.h"
+#include <algorithm>
 
 Table buildTable(CFG cfg)
 {
@@ -18,28 +19,50 @@ Table buildTable(CFG cfg)
         for (int i = 0; i < llTable.headerRow.size(); i++)
         {
             string terminal = llTable.headerRow[i];
-            // This terminal is in the predict set so mark the table
-            // with the rule
-            if (predict.count(terminal) > 0)
-            {
-                // See if terminal looked at befor
-                if (row.size() <= i)
+
+            // if (terminal == "$")
+            // {
+            //     if (find(rule.RHS.begin(), rule.RHS.end(), "lambda") != rule.RHS.end())
+            //     {
+            //         if (row.size() <= i)
+            //         {
+            //             row.push_back(rule.identity);
+            //         }
+            //         else
+            //         {
+            //             row[i] = rule.identity;
+            //         }
+            //     }
+            //     else
+            //     {
+            //         row.push_back(0);
+            //     }
+            // }
+            // else
+            // {
+                // This terminal is in the predict set so mark the table
+                // with the rule
+                if (predict.count(terminal) > 0)
                 {
-                    row.push_back(rule.identity);
+                    // See if terminal looked at befor
+                    if (row.size() <= i)
+                    {
+                        row.push_back(rule.identity);
+                    }
+                    else
+                    {
+                        row[i] = rule.identity;
+                    }
                 }
                 else
                 {
-                    row[i] = rule.identity;
+                    // Not there check if there is already an enrty in cell
+                    if (row.size() <= i)
+                    {
+                        row.push_back(NA);
+                    }
                 }
-            }
-            else
-            {
-                // Not there check if there is already an enrty in cell
-                if (row.size() <= i)
-                {
-                    row.push_back(NA);
-                }
-            }
+            //}
         }
     }
 

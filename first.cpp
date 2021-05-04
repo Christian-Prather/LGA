@@ -8,8 +8,19 @@ FirstResult firstSet(vector<string> XB, set<string> T, CFG cfg)
     string X = XB.at(0);
     set<string> F;
     FirstResult result;
+    for (string check : XB)
+    {
+        if (check == "$")
+        {
+            result.F.insert("$");
+        }
+    }
+    if (X == "lambda")
+    {
+        return result;
+    }
 
-    if (cfg.terminals.find(X) != cfg.terminals.end())
+    if (cfg.terminals.find(X) != cfg.terminals.end() || X == "$")
     {
         F.insert(X);
         result.F = F;
@@ -22,7 +33,7 @@ FirstResult firstSet(vector<string> XB, set<string> T, CFG cfg)
 
         for (Rule p : cfg.rules)
         {
-            if (p.LHS == X)
+            if (p.LHS == X && p.RHS[0] != "lambda")
             {
                 FirstResult tempFirst = firstSet(p.RHS, T, cfg);
                 result.F = setUnion(result.F, tempFirst.F);
@@ -35,12 +46,12 @@ FirstResult firstSet(vector<string> XB, set<string> T, CFG cfg)
         XB.erase(XB.begin());
         if (!XB.empty())
         {
-            if (XB.size() == 1 && XB.at(0) != "$")
-            {
-                FirstResult tempFirst = firstSet(XB, T, cfg);
-                result.F = setUnion(result.F, tempFirst.F);
-            }
+            // if (XB.size() == 1 && XB.at(0) != "$")
+            //{
+            FirstResult tempFirst = firstSet(XB, T, cfg);
+            result.F = setUnion(result.F, tempFirst.F);
         }
+        //}
     }
     result.T = T;
     return result;

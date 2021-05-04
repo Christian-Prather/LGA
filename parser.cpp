@@ -39,7 +39,7 @@ Token tokenPop(std::vector<Token> tokenStream)
 
 Node buildRawParseTree(CFG cfg, Table table, std::vector<Token> tokenStream)
 {
-    string MARKER = "*";
+    string MARKER = "MARKER";
 
     Node root("root");
     Node *currentNode = &root;

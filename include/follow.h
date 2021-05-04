@@ -16,5 +16,5 @@ struct FollowResult
 };
 
 FollowResult followSet(string A, set<string> T, CFG cfg);
-
+bool checkAllLambda(vector<string> XB, CFG cfg);
 #endif

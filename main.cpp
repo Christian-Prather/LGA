@@ -31,12 +31,89 @@
 #include "include/parser.h"
 
 using namespace std;
+string tokensHex;
+vector<vector<string>> inputRows;
+
+void loadScanFile(string filePath)
+{
+    bool firstLine = true;
+
+    string line;
+    ifstream inputFile(filePath);
+    if (!inputFile)
+    {
+        exit(1);
+    }
+    while (getline(inputFile, line))
+    {
+        if (line.empty())
+        {
+            continue;
+        }
+
+        if (firstLine)
+        {
+            firstLine = false;
+            tokensHex = line;
+            continue;
+        }
+
+        // vector<string> row;
+        // string word = "";
+        // char lastCharacter;
+        // cout << line << endl;
+        // for (auto character : line)
+        // {
+        //     if (character == ' ' && lastCharacter != ' ')
+        //     {
+        //         row.push_back(word);
+        //         word = "";
+        //     }
+        //     else if (character != ' ')
+        //     {
+        //         word += character;
+        //         lastCharacter = character;
+        //     }
+        // }
+
+        vector<string> row;
+        istringstream ss(line);
+        for (string s; ss >> s;)
+        {
+            row.push_back(s);
+        }
+        inputRows.push_back(row);
+    }
+    inputFile.close();
+}
 
 int main(int argc, char **argv)
 {
-    string inputFile = "../testFiles/llre.cfg";
-
-    CFG cfg = readCfg(inputFile);
+    //string inputFile = "../scan.lut";
+    //string outputFile = "../scan.u";
+    string inputFile = "";
+    string outputFile = "";
+    if (argc > 2)
+    {
+        inputFile = argv[1];
+        outputFile = argv[2];
+    }
+    else
+    {
+        cout << "Not enough arguments " << endl;
+        exit(1);
+    }
+    string grammarFile = "../testFiles/llre.cfg";
+    loadScanFile(inputFile);
+    for (auto row : inputRows)
+    {
+        for (auto item : row)
+        {
+            cout << item << " ";
+        }
+        cout << endl;
+    }
+    CFG cfg = readCfg(grammarFile);
     printOutput(cfg);
 
     stack<Rule> T;
@@ -193,10 +270,35 @@ int main(int argc, char **argv)
     // auto actionTable = buildActionTable(itemSets, cfg, symbols);
     // printActionTable(actionTable, symbols);
 
-    string regex_input = "a-d.q(A|B|)*de+";
-    auto regex_tokens = scan_regex(regex_input);
+    //string regex_input = "a-d.q(A|B|)*de+";
+    for (auto row : inputRows)
+    {
 
-    Node rootTree = buildRawParseTree(cfg, llTable, regex_tokens);
+        cout << row[0];
+        auto regex_tokens = scan_regex(row[0]);
+
+        Node rootTree = buildRawParseTree(cfg, llTable, regex_tokens);
+        //cout << rootTree.type << endl;
+    }
+
+    ofstream outFile;
+    outFile.open(outputFile);
+    outFile << tokensHex << '\n';
+    for (auto row : inputRows)
+    {
+        string name = row[1];
+        name += ".tt";
+        outFile << name;
+        outFile << " ";
+        outFile << row[1];
+        if (row.size() == 3)
+        {
+            outFile << " ";
+            outFile << row[2];
+        }
+        outFile << '\n';
+    }
+
     //auto root = LLTabularParsing()
     return 0;
 }

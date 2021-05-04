@@ -99,5 +99,6 @@ Node buildRawParseTree(CFG cfg, Table table, std::vector<Token> tokenStream)
             currentNode = currentNode->parent;
         }
     }
+    currentTokenIndex = 0;
     return root;
 }
